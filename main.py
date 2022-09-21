@@ -38,7 +38,7 @@ global version
 version = "1.4.0"
 
 global lines
-lines = str(937 + 173)  #str([main.py] + [ccDatabase.py])
+lines = str(1079 + 173)  #str([main.py] + [ccDatabase.py])
 
 global statusSTR
 statusSTR = "/seecoins | Version " + version + " | " + lines + " lines of code"
@@ -1073,8 +1073,7 @@ async def seecoins(ctx):
 
 #start web server
 keep_alive.keep_alive()
-
 try:
   bot.run()
 except:
-  os.system("kill 1")
+  os.system("python main.py")
