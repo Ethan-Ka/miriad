@@ -38,7 +38,7 @@ global version
 version = "1.4.0"
 
 global lines
-lines = str(1079 + 173)  #str([main.py] + [ccDatabase.py])
+lines = str(1068 + 173)  #str([main.py] + [ccDatabase.py])
 
 global statusSTR
 statusSTR = "/seecoins | Version " + version + " | " + lines + " lines of code"
