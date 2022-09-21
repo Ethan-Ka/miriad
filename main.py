@@ -35,7 +35,7 @@ startTime = datetime.datetime.now(dt_formatted.tzinfo)
 
 # global variables #
 global version
-version = "1.4.0"
+version = "1.4.1"
 
 global lines
 lines = str(1068 + 173)  #str([main.py] + [ccDatabase.py])
