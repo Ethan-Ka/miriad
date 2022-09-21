@@ -257,6 +257,17 @@ def getRules():
 
 
 # -- Load Events -- #
+@bot.listen(hikari.MemberCreateEvent)
+async def member_join(event):
+  member = event.member
+  guild = event.guild_id
+  member_name = member.username
+  member_id = member.id
+  interaction = cc.create_user(guild, member_id, False, False, member_name,"624384023132635146")
+  
+
+
+
 @bot.listen(hikari.StartedEvent)
 async def bot_started(event):
     #set now for start message in #1015726410175889489
