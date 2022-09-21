@@ -1,0 +1,60 @@
+cc = ccDatabase()
+cc.loadCCDatabase()
+
+
+cc.create_user(guild:any, user_id:any, disabled:bool, admin:bool, author:any)
+returns:
+"noperms"
+True
+False
+DONE
+
+cc.deleteUser(guild:any, user_id:any, author:any)
+returns:
+"guildnotfound"
+"noperms"
+True
+DONE
+
+cc.setCoins(guild:any, target:any, amount, author:any)
+returns:
+"noperms"
+"targetnotfound"
+"disabled"
+True
+DONE
+
+cc.setDisabled(guild: any, target: any, disabled: bool, author:any)
+returns:
+"noperms"
+"targetnotfound"
+"guildnotfound"
+True
+DONE
+
+cc.transfer(author:str, amount:str, guild:str, target:str)
+returns:
+"usernotfound"
+"insfunds"
+"transfererror"
+True
+DONE
+
+cc.seeCoins(guild:any, target:any)
+returns:
+balance:int
+"targetnotfound"
+DONE
+
+
+
+returns:
+True
+False
+"noperms"
+"targetnotfound"
+"disabled"
+"guildnotfound"
+"usernotfound"
+"insfunds"
+"transfererror"

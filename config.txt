@@ -1,0 +1,6 @@
+global channelID 
+channelID=1015037178742587503
+global hasIntro 
+hasIntro=1015038251016409118
+global roleToAdd
+roleToAdd=1015662829971451944
