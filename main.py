@@ -63,7 +63,7 @@ def consoleLog(type, message):
 
 
 bot = lightbulb.BotApp(
-    token="MTAxNTY0MjI4MDc2MzMzMDYxMA.GP_nLB.PBnqnYiXldxmABE9SInSpCmJTWydGwRU9knpV0",
+    token=os.environ["TOKEN"],
     #default_enabled_guilds=(985315511728492616)
     #default enabled guilds: remove after testing.)
 )
