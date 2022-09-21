@@ -196,8 +196,8 @@ def sendLeaderboard():
         leaderboard = cc.getLeaderboard(guild)
         #rank counter
         place = 1
-        embed = hikari.Embed(title=":CreamCoin: Leaderboard :CreamCoin:",
-                                description=":CreamCoin: Creamcoin Leaderboard:CreamCoin: ",
+        embed = hikari.Embed(title="Leaderboard",
+                                description="Creamcoin Leaderboard",
                                 color=randC)
         for key in leaderboard:
             if place > 10:
@@ -208,7 +208,7 @@ def sendLeaderboard():
                 coins = str(cc.seeCoins(guild, key))
                 embed.add_field(
                     str(place) + ": ",
-                    f"<@!" + keyStr + "> - " + coins + " :CreamCoin: s")
+                    f"<@!" + keyStr + "> - " + coins + " CCs")
                 embed.set_footer(
                     "This leaderboard auto updates. Run /update | color: " +
                     randC)
@@ -890,7 +890,7 @@ async def setcoins(ctx):
                                     description="Admin action on " +
                                     ctx.options.user.mention,
                                     color=embedColors.green)
-          logmessage.add_field("Set:", str(amount) + " :CreamCoin: s")
+          logmessage.add_field("Set:", str(amount) + " CCs")
           await logMessage(logmessage)
 
       await ctx.respond(embed)
@@ -1037,7 +1037,7 @@ async def transfer(ctx):
                                 description="Transaction between " +
                                 ctx.author.mention + " -> " +
                                 ctx.options.user.mention)
-      logmessage.add_field("Transferred:", str(amount) + " :CreamCoin: s")
+      logmessage.add_field("Transferred:", str(amount) + " CCs")
       await logMessage(logmessage)
       await ctx.respond(embed)
 
@@ -1073,7 +1073,7 @@ async def seecoins(ctx):
       embed = hikari.Embed(title="Balance",
                            description="Balance of " + targetmention,
                            color=randomColor())
-      embed.add_field("Balance: ", str(interaction)+" :CreamCoin: s")
+      embed.add_field("Balance: ", str(interaction)+" CCs")
       await ctx.respond(embed)
 
 
