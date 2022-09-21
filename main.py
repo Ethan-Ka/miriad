@@ -49,7 +49,7 @@ cc.loadCCDatabase()
 
 # SET IF MAKING CHANGES
 global developing
-developing = True
+developing = False
 
 
 def consoleLog(type, message):
