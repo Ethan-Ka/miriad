@@ -38,7 +38,7 @@ global version
 version = "1.4.1"
 
 global lines
-lines = str(1068 + 173)  #str([main.py] + [ccDatabase.py])
+lines = str(1090 + 173)  #str([main.py] + [ccDatabase.py])
 
 global statusSTR
 statusSTR = "/seecoins | Version " + version + " | " + lines + " lines of code"
@@ -196,8 +196,8 @@ def sendLeaderboard():
         leaderboard = cc.getLeaderboard(guild)
         #rank counter
         place = 1
-        embed = hikari.Embed(title="Leaderboard",
-                                description="Creamcoin Leaderboard",
+        embed = hikari.Embed(title=":CreamCoin: Leaderboard :CreamCoin:",
+                                description=":CreamCoin: Creamcoin Leaderboard:CreamCoin: ",
                                 color=randC)
         for key in leaderboard:
             if place > 10:
@@ -208,7 +208,7 @@ def sendLeaderboard():
                 coins = str(cc.seeCoins(guild, key))
                 embed.add_field(
                     str(place) + ": ",
-                    f"<@!" + keyStr + "> - " + coins + " cc")
+                    f"<@!" + keyStr + "> - " + coins + " :CreamCoin: s")
                 embed.set_footer(
                     "This leaderboard auto updates. Run /update | color: " +
                     randC)
@@ -257,12 +257,30 @@ def getRules():
 
 
 # -- Load Events -- #
+@bot.listen(hikari.MemberCreateEvent) # on member join
+async def member_join(event):
+  member = event.member # get member object
+  guild = event.guild_id # get guild id
+  member_name = member.username # get member name from object
+  member_id = member.id # get member id from object
+  interaction = cc.create_user(guild, member_id, False, False, member_name,"624384023132635146") # add to database
+  # create log embed
+  logmessage = embed(
+    hikari.Embed(title="Member Joined", 
+                 description="A Member Joined The Server", 
+                 color=embedColors.green)
+    )
+  logmessage.add_field("Added to Cream Coin Database", f"Member {member_name} added to the Cream Coin Database") # add field
+  await log(logmessage) #log 
+
+
 @bot.listen(hikari.StartedEvent)
 async def bot_started(event):
     #set now for start message in #1015726410175889489
     await retrieveUsernames()
     randC = randomColor()
     now = datetime.datetime.now()
+    # Send bot has started
     embed = hikari.Embed(title="Bot has started",
                          description="Bot has started at " + str(now.hour) +
                          ":" + str(now.minute) + ":" + str(now.second),
@@ -270,9 +288,11 @@ async def bot_started(event):
     embed.set_thumbnail("miriad.png")
     embed.set_footer("color: " + randC)
     if not developing:
+        #send if updates are not in progress
+        # PROBABLY NOT NEEDED BECAUSE GITHUB HOSTING
         await bot.rest.create_message(1015726410175889489, content=embed)
 
-    #config
+    # Update rules
     await bot.rest.edit_message(channel=942477754287411241,
                                 message=1020010746433785967,
                                 content=getRules())
@@ -294,6 +314,7 @@ async def bot_started(event):
     else:
         hikariStatus = hikari.Status.ONLINE
         consoleLog(color.green, "developing == False")
+    
     #set discord presence
     await bot.update_presence(status=hikariStatus,
                               activity=hikari.Activity(
@@ -869,7 +890,7 @@ async def setcoins(ctx):
                                     description="Admin action on " +
                                     ctx.options.user.mention,
                                     color=embedColors.green)
-          logmessage.add_field("Set:", str(amount) + " cream coins")
+          logmessage.add_field("Set:", str(amount) + " :CreamCoin: s")
           await logMessage(logmessage)
 
       await ctx.respond(embed)
@@ -1016,7 +1037,7 @@ async def transfer(ctx):
                                 description="Transaction between " +
                                 ctx.author.mention + " -> " +
                                 ctx.options.user.mention)
-      logmessage.add_field("Transferred:", str(amount) + " cream coins")
+      logmessage.add_field("Transferred:", str(amount) + " :CreamCoin: s")
       await logMessage(logmessage)
       await ctx.respond(embed)
 
@@ -1052,7 +1073,7 @@ async def seecoins(ctx):
       embed = hikari.Embed(title="Balance",
                            description="Balance of " + targetmention,
                            color=randomColor())
-      embed.add_field("Balance: ", str(interaction))
+      embed.add_field("Balance: ", str(interaction)+" :CreamCoin: s")
       await ctx.respond(embed)
 
 
