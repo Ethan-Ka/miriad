@@ -36,7 +36,6 @@ jobs:
           python -m pip install flask
           python -m pip install datetime
           python -m pip install schedule
-          python -m pip install re
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: python main.py
