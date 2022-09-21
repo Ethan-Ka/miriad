@@ -263,6 +263,7 @@ async def bot_started(event):
     await retrieveUsernames()
     randC = randomColor()
     now = datetime.datetime.now()
+    # Send bot has started
     embed = hikari.Embed(title="Bot has started",
                          description="Bot has started at " + str(now.hour) +
                          ":" + str(now.minute) + ":" + str(now.second),
@@ -270,9 +271,11 @@ async def bot_started(event):
     embed.set_thumbnail("miriad.png")
     embed.set_footer("color: " + randC)
     if not developing:
+        #send if updates are not in progress
+        # PROBABLY NOT NEEDED BECAUSE GITHUB HOSTING
         await bot.rest.create_message(1015726410175889489, content=embed)
 
-    #config
+    # Update rules
     await bot.rest.edit_message(channel=942477754287411241,
                                 message=1020010746433785967,
                                 content=getRules())
@@ -294,6 +297,7 @@ async def bot_started(event):
     else:
         hikariStatus = hikari.Status.ONLINE
         consoleLog(color.green, "developing == False")
+    
     #set discord presence
     await bot.update_presence(status=hikariStatus,
                               activity=hikari.Activity(
