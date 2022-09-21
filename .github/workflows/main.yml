@@ -2,6 +2,12 @@
 
 name: CI
 
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
@@ -14,13 +20,9 @@ on:
   - cron: "0 8 * * 0-6"
   - cron: "0 14 * * 0-6"
   - cron: "0 20 * * 0-6"
-  
-concurrency: 
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
   # Allows you to run this workflow manually from the Actions tab
-#  workflow_dispatch:
+  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
