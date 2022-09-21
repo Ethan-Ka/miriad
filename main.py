@@ -38,7 +38,7 @@ global version
 version = "1.4.1"
 
 global lines
-lines = str(1068 + 173)  #str([main.py] + [ccDatabase.py])
+lines = str(1090 + 173)  #str([main.py] + [ccDatabase.py])
 
 global statusSTR
 statusSTR = "/seecoins | Version " + version + " | " + lines + " lines of code"
@@ -257,15 +257,21 @@ def getRules():
 
 
 # -- Load Events -- #
-@bot.listen(hikari.MemberCreateEvent)
+@bot.listen(hikari.MemberCreateEvent) # on member join
 async def member_join(event):
-  member = event.member
-  guild = event.guild_id
-  member_name = member.username
-  member_id = member.id
-  interaction = cc.create_user(guild, member_id, False, False, member_name,"624384023132635146")
-  
-
+  member = event.member # get member object
+  guild = event.guild_id # get guild id
+  member_name = member.username # get member name from object
+  member_id = member.id # get member id from object
+  interaction = cc.create_user(guild, member_id, False, False, member_name,"624384023132635146") # add to database
+  # create log embed
+  logmessage = embed(
+    hikari.Embed(title="Member Joined", 
+                 description="A Member Joined The Server", 
+                 color=embedColors.green)
+    )
+  logmessage.add_field("Added to Cream Coin Database", f"Member {member_name} added to the Cream Coin Database") # add field
+  await log(logmessage) #log 
 
 
 @bot.listen(hikari.StartedEvent)
