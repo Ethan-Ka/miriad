@@ -69,7 +69,7 @@ bot = lightbulb.BotApp(
 )
 ###############################
 #        Miriad Bot           #
-#       Version 1.3.0         #
+#       Version 1.4.1         #
 # created by thedankboi_#2556 #
 ###############################
 
@@ -96,9 +96,10 @@ rules = {
     "Self promotion will only happen in <#1009555289936236665>. If you self promote anywhere else you will get a warning."
 }
 
-#
+#for rules commands
 global rulesLength
 rulesLength = []
+
 # -- Paths to files -- #
 global config
 config = r"config.txt"
@@ -111,12 +112,8 @@ hikari.presences.RichActivity.name = "Version " + version
 
 
 def getSetting():
-  #print("exists"+""+Setpath)
   consoleLog(color.blue, "Do setting")
-  #time.sleep(5)
   setFile = open(config, 'r')
-  #global allSettings
-
   content = setFile.read()
   global channelID
   channelID = 0
@@ -126,7 +123,6 @@ def getSetting():
   roleToAdd = 0
   exec(content)
   consoleLog(color.green, "Setting done")
-  #print(content)
 
 
 #log message in channel #transactions
@@ -168,9 +164,6 @@ def pushSettings(channelID, hasIntro, roleToAdd):
                 "\nglobal hasIntro \nhasIntro=" + str(hasIntro) +
                 "\nglobal roleToAdd\nroleToAdd=" + str(roleToAdd))
   consoleLog(color.green, "Push Setting Complete")
-  #print("global channelID \nchannelID=" + str(channelID) +
-  #      "\nglobal hasIntro \nhasIntro=" + str(hasIntro) +
-  #      "\nglobal roleToAdd\nroleToAdd=" + str(roleToAdd))
   setFile.close()
 
 
@@ -204,14 +197,13 @@ def sendLeaderboard():
         #rank counter
         place = 1
         embed = hikari.Embed(title="Leaderboard",
-                             description="Creamcoin Leaderboard",
-                             color=randC)
+                                description="Creamcoin Leaderboard",
+                                color=randC)
         for key in leaderboard:
             if place > 10:
                 break
             else:
                 keyStr = str(key)
-                #print(keyStr)
                 value1 = str(key)
                 coins = str(cc.seeCoins(guild, key))
                 embed.add_field(
@@ -229,7 +221,7 @@ def sendLeaderboard():
 
 
 async def retrieveUsernames():
-    consoleLog(color.blue, "do get usernames")
+    consoleLog(color.blue, "Get Usernames")
     guild = "942477753536634962"
     creamCoin = cc.creamCoinReturn()
     for key in creamCoin[guild]:
@@ -250,17 +242,17 @@ async def retrieveUsernames():
 
     #RETURN EMBED WITH RULES
 def getRules():
-    consoleLog(color.blue, "Do get rules")
+    consoleLog(color.blue, "Get rules")
     randC = "#3498DB"
     embed = hikari.Embed(title="Rules",
                          description="Server Rules",
                          color=embedColors.blue)
     for key in rules:
-        #print(rules[key])
         embed.add_field(str(key), rules[key])
         rulesLength.append(key)
         consoleLog(color.green, "done rule" + key)
     embed.set_footer("/rule [rule] | color: " + randC)
+    consoleLog(color.green, "Rules fetched")
     return embed
 
 
@@ -292,7 +284,6 @@ async def bot_started(event):
     creamCoin = cc.creamCoinReturn()
     #UPDATE LEADERBOARD
     leaderboardID = creamCoin["storage"]["leaderboard"]
-    #print(cc.addTaxes("942477753536634962", 100))
     await bot.rest.edit_message(channel=leaderboardChannel,
                                 message=leaderboardID,
                                 content=sendLeaderboard())
@@ -311,28 +302,30 @@ async def bot_started(event):
                               ))
     consoleLog(color.green, "set status")
 
-
+# Message Create Event
 @bot.listen(hikari.GuildMessageCreateEvent)
 async def messageCreated(event):
-
+    # If in the Level Up Channel
     if event.channel_id == 942477754287411245:
         guild = "942477753536634962"
         inputString = event.content
         levelSplit = inputString.split("j", 1)
+        #Split on "just leveled up"
         levelTwo = levelSplit[1]
         levelOne = levelSplit[0]
 
         user = int(re.search(r'\d+', levelOne).group())
+        #get user ID from the split
         level = int(re.search(r'\d+', levelTwo).group())
+        #get level up level from the second split
         randC = randomColor()
         logmessage = hikari.Embed(title="Level Up!",
                                   color=embedColors.green,
                                   description=f"<@{user}> leveled up!")
-
-        if level > 10:
+        # create an embed message to log
+        if level > 10: #specific level up coin amounts to add
             amount_to_add = 50
-            balance = cc.seeCoins(guild, str(user))
-            print(balance)
+            balance = cc.seeCoins(guild, str(user)) #get balance
             amount = int(amount_to_add) + int(balance)
             cc.setCoins(guild, str(user), amount, "624384023132635146")
             logmessage.add_field("Level Up!: ",
@@ -342,14 +335,13 @@ async def messageCreated(event):
             #addCoins
         elif level < 10:
             amount_to_add = 20
-            balance = cc.seeCoins(guild, str(user))
-            print(balance)
-            amount = int(amount_to_add) + int(balance)
-            cc.setCoins(guild, str(user), amount, "624384023132635146")
+            balance = cc.seeCoins(guild, str(user)) #get balance
+            amount = int(amount_to_add) + int(balance) #add coins to balance
+            cc.setCoins(guild, str(user), amount, "624384023132635146") #set the coins to amount + balance
             logmessage.add_field("Level Up!: ",
-                                 "+" + str(amount_to_add) + " cream coins")
-            cc.pushCCDatabase()
-            await logMessage(logmessage)
+                                 "+" + str(amount_to_add) + " cream coins") #add field
+            cc.pushCCDatabase() #push the database
+            await logMessage(logmessage) # log message
         else:
             print("uh oh")
 
@@ -721,8 +713,7 @@ async def makeIntro(ctx):
             embed.add_field(
                 "Role Error",
                 "Make sure I am **above** the desired role to add")
-            print(e)
-            global globalErrorException
+            #global globalErrorException
             globalErrorException = e
             row = bot.rest.build_action_row()
             button = row.add_button(hikari.ButtonStyle.PRIMARY, "seeerror")
@@ -771,7 +762,6 @@ async def createUser(ctx):
   name = (await bot.rest.fetch_user(int(target))).username
   admin = ctx.options.admin
   interaction = cc.create_user(guild, target, disabled, admin, name, user)
-  #print(interaction)
   randC = randomColor()
   if interaction == "guildnotfound":
       embed = hikari.Embed(title="Error",
@@ -786,7 +776,6 @@ async def createUser(ctx):
       embed.add_field("Error:", "creamCoin.noperms error")
       await ctx.respond(embed)
   if interaction == True:
-      #print("True")
       embed = hikari.Embed(title="Success!",
                            description="User " + target + " created.")
       await ctx.respond(embed)
