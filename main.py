@@ -258,6 +258,8 @@ def getRules():
   
 # -- Load Intents -- #  
 
+Intents = hikari.Intents
+
 my_intents = (
   Intents.GUILDS              |
   Intents.GUILD_BANS          |
