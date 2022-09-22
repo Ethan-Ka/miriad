@@ -265,7 +265,7 @@ my_intents = (
   Intents.GUILD_MEMBER_ADD    |
   Intents.GUILD_MEMBER_REMOVE |
   Intents.GUILD_MEMBER_UPDATE |
-  Intents.PRESENCE_UPDATE     |
+  Intents.PRESENCE_UPDATE     
 )
 
 # -- Load Events -- #
