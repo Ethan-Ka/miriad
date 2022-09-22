@@ -55,11 +55,14 @@ developing = False
 def consoleLog(type, message):
   if type == color.red:
 
-      print(type + " - " + message + " ✗" + "\033[0m")
+      #print(type + " - " + message + " ✗" + "\033[0m")
+      print(" - " + message + " ✗")
   if type == color.green:
-      print(type + " - " + message + " ✓" + "\033[0m")
-  else:
-      print("\033[1m" + type + " * " + message + "\033[0m")
+      #print(type + " - " + message + " ✓" + "\033[0m")
+      print( " - " + message + " ✓")
+  else
+      #print("\033[1m" + type + " * " + message + "\033[0m")
+      print(" * " + message)
 
 
 bot = lightbulb.BotApp(
