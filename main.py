@@ -852,12 +852,12 @@ async def deleteUser(ctx):
                              description="User " + target + " deleted.",
                              color=embedColors.green)
         logmessage = embed(
-      hikari.Embed(title="Member Joined", 
+        hikari.Embed(title="Member Joined", 
                    description="A Member Joined The Server", 
                    color=embedColors.green)
-      )
-      logmessage.add_field("Removed user from Cream Coin Database", f"Member {member_name} removed from the Cream Coin Database") # add field
-      await log(logmessage) #log
+        )
+        logmessage.add_field("Removed user from Cream Coin Database", f"Member {member_name} removed from the Cream Coin Database") # add field
+        await log(logmessage) #log
         await ctx.respond(embed)
 
 
