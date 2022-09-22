@@ -266,6 +266,8 @@ my_intents = (
   Intents.GUILD_MEMBER_REMOVE |
   Intents.GUILD_MEMBER_UPDATE |
   Intents.PRESENCE_UPDATE     |
+)
+
 # -- Load Events -- #
 @bot.listen(hikari.MemberCreateEvent) # on member join
 async def member_join(event):
