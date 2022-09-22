@@ -64,6 +64,7 @@ def consoleLog(type, message):
 
 bot = lightbulb.BotApp(
     token=os.environ["TOKEN"],
+    intents = hikari.Intents.ALL
     #default_enabled_guilds=(985315511728492616)
     #default enabled guilds: remove after testing.)
 )
@@ -255,20 +256,7 @@ def getRules():
     return embed
 
   
-  
-# -- Load Intents -- #  
 
-Intents = hikari.Intents
-
-my_intents = (
-  Intents.GUILDS              |
-  Intents.GUILD_BANS          |
-  Intents.GUILD_EMOJIS        |
-  Intents.GUILD_MEMBER_ADD    |
-  Intents.GUILD_MEMBER_REMOVE |
-  Intents.GUILD_MEMBER_UPDATE |
-  Intents.PRESENCE_UPDATE     
-)
 
 # -- Load Events -- #
 @bot.listen(hikari.MemberCreateEvent) # on member join
