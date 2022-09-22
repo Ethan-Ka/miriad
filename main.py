@@ -35,7 +35,7 @@ startTime = datetime.datetime.now(dt_formatted.tzinfo)
 
 # global variables #
 global version
-version = "1.4.1"
+version = "1.4.5"
 
 global lines
 lines = str(1090 + 173)  #str([main.py] + [ccDatabase.py])
@@ -73,7 +73,7 @@ bot = lightbulb.BotApp(
 )
 ###############################
 #        Miriad Bot           #
-#       Version 1.4.1         #
+#       Version 1.4.5         #
 # created by thedankboi_#2556 #
 ###############################
 
@@ -270,13 +270,14 @@ async def member_join(event):
   member_id = member.id # get member id from object
   interaction = cc.create_user(guild, member_id, False, False, member_name,"624384023132635146") # add to database
   # create log embed
-  logmessage = embed(
-    hikari.Embed(title="Member Joined", 
-                 description="A Member Joined The Server", 
-                 color=embedColors.green)
-    )
-  logmessage.add_field("Added to Cream Coin Database", f"Member {member_name} added to the Cream Coin Database") # add field
-  await log(logmessage) #log 
+  if interaction:
+    logmessage = embed(
+      hikari.Embed(title="Member Joined", 
+                   description="A Member Joined The Server", 
+                   color=embedColors.green)
+      )
+    logmessage.add_field("Added to Cream Coin Database", f"Member {member_name} added to the Cream Coin Database") # add field
+    await log(logmessage) #log 
 
 
 @bot.listen(hikari.StartedEvent)
@@ -801,10 +802,19 @@ async def createUser(ctx):
                            color=embedColors.red)
       embed.add_field("Error:", "creamCoin.noperms error")
       await ctx.respond(embed)
-  if interaction == True:
+  if interaction:
       embed = hikari.Embed(title="Success!",
                            description="User " + target + " created.")
+      logmessage = embed(
+      hikari.Embed(title="Member Joined", 
+                   description="A Member Joined The Server", 
+                   color=embedColors.green)
+      )
+      logmessage.add_field("Added to Cream Coin Database", f"Member {member_name} added to the Cream Coin Database") # add field
+      await log(logmessage) #log 
       await ctx.respond(embed)
+      
+      
   else:
       embed = hikari.Embed(title="User create error",
                            description="Already there bruh",
@@ -841,6 +851,13 @@ async def deleteUser(ctx):
         embed = hikari.Embed(title="Success!",
                              description="User " + target + " deleted.",
                              color=embedColors.green)
+        logmessage = embed(
+      hikari.Embed(title="Member Joined", 
+                   description="A Member Joined The Server", 
+                   color=embedColors.green)
+      )
+      logmessage.add_field("Removed user from Cream Coin Database", f"Member {member_name} removed from the Cream Coin Database") # add field
+      await log(logmessage) #log
         await ctx.respond(embed)
 
 
@@ -933,16 +950,50 @@ async def setdisabled(ctx):
                            color=embedColors.red)
       embed.add_field("Error:", "creamCoin.targetnotfound error")
       await ctx.respond(embed)
-  if interaction == "disabled":
-      embed = hikari.Embed(title="Error",
-                           description="Target Disabled.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.disabled error")
-      await ctx.respond(embed)
   if interaction == True:
       embed = hikari.Embed(title="Success!",
                            description="User [disabled] now set to " +
                            str(disabled),
+                           color=embedColors.green)
+      await ctx.respond(embed)
+      
+      
+@bot.command
+@lightbulb.option("admin",
+                  "TRUE OR FALSE",
+                  type=hikari.OptionType.BOOLEAN,
+                  modifier=lightbulb.OptionModifier.CONSUME_REST,
+                  required=True)
+@lightbulb.option("user",
+                  "the user",
+                  type=hikari.OptionType.USER,
+                  modifier=lightbulb.OptionModifier.CONSUME_REST,
+                  required=True)
+@lightbulb.command("setadmin", "add or remove admin perms", ephemeral=True, auto_defer=True)
+@lightbulb.implements(lightbulb.SlashCommand)
+async def setdisabled(ctx):
+  user = str(ctx.author.id)
+  guild = str(ctx.guild_id)
+  target = str(ctx.options.user.id)
+  #targetmention = ctx.options.user
+  admin = ctx.options.admin
+  interaction = cc.setAdmin(guild, target, admin, user)
+  if interaction == "noperms":
+      embed = hikari.Embed(title="Error",
+                           description="You are not admin.",
+                           color=embedColors.red)
+      embed.add_field("Error:", "creamCoin.noperms error")
+      await ctx.respond(embed)
+  if interaction == "targetnotfound":
+      embed = hikari.Embed(title="Error",
+                           description="Target Not Found.",
+                           color=embedColors.red)
+      embed.add_field("Error:", "creamCoin.targetnotfound error")
+      await ctx.respond(embed)
+  if interaction == True:
+      embed = hikari.Embed(title="Success!",
+                           description="User [admin] now set to " +
+                           str(admin),
                            color=embedColors.green)
       await ctx.respond(embed)
 
