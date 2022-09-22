@@ -108,7 +108,6 @@ global doneList
 doneList = r"doneRoles.txt"
 
 # -- Create functions -- #
-hikari.presences.RichActivity.name = "Version " + version
 
 
 def getSetting():
@@ -255,7 +254,18 @@ def getRules():
     consoleLog(color.green, "Rules fetched")
     return embed
 
+  
+  
+# -- Load Intents -- #  
 
+my_intents = (
+  Intents.GUILDS              |
+  Intents.GUILD_BANS          |
+  Intents.GUILD_EMOJIS        |
+  Intents.GUILD_MEMBER_ADD    |
+  Intents.GUILD_MEMBER_REMOVE |
+  Intents.GUILD_MEMBER_UPDATE |
+  Intents.PRESENCE_UPDATE     |
 # -- Load Events -- #
 @bot.listen(hikari.MemberCreateEvent) # on member join
 async def member_join(event):
