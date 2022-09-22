@@ -60,7 +60,7 @@ def consoleLog(type, message):
   if type == color.green:
       #print(type + " - " + message + " ✓" + "\033[0m")
       print( " - " + message + " ✓")
-  else
+  else:
       #print("\033[1m" + type + " * " + message + "\033[0m")
       print(" * " + message)
 
