@@ -124,6 +124,20 @@ class ccDatabase():
             creamCoin[guild][target]["disabled"] = disabled
             self.pushCCDatabase()
             return True
+        
+    def setAdmin(self, guild: any, target: any, admin: bool, author:any):
+        if not creamCoin[guild][author]["admin"]==True:
+            return "noperms"
+        if not target in creamCoin[guild]:
+            return "targetnotfound"
+        if not guild in creamCoin:
+            return "guildnotfound"
+        else:
+            creamCoin[guild][target]["admin"] = admin
+            self.pushCCDatabase()
+            return True
+    
+    
     def transfer(self, author:str, amount:str, guild:str, target:str):
         #print(json.dumps(creamCoin))
         
