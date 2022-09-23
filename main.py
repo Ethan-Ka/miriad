@@ -9,6 +9,10 @@ import os
 import json
 import schedule
 import re
+import ailibrary
+
+
+openAI = ailibrary.AILibrary()
 
 
 class embedColors:
@@ -532,7 +536,22 @@ async def poll(ctx):
 async def ping(ctx):
     await ctx.respond("Pong!")
 
-
+@bot.command
+@lightbulb.option("prompt",
+                  "prompt to send",
+                  type=hikari.OptionType.STRING,
+                  modifier=lightbulb.OptionModifier.CONSUME_REST,
+                  required=True
+)
+@lightbulb.command("text", "send a text prompt", auto_defer=True)
+@lightbulb.implements(lightbulb.SlashCommand)
+async def text(ctx):
+    channel = ctx.channel_id
+    prompt = ctx.options.prompt
+    interaction = openAI.text("What do you think of computers")
+    embed = hikari.Embed(title="Response", description="model: text-davinci-002")
+    embed.add_field(":", interaction[0])
+    
 @bot.command
 @lightbulb.command("update", "update leaderboard", ephemeral=True,  auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
