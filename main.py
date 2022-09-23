@@ -552,6 +552,7 @@ async def text(ctx):
     embed = hikari.Embed(title="Response", description="model: text-davinci-002")
     embed.add_field(":", interaction[0])
     
+    
 @bot.command
 @lightbulb.command("update", "update leaderboard", ephemeral=True,  auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
