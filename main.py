@@ -398,7 +398,7 @@ async def text(ctx):
     interaction = openAI.text(prompt)
     embed = hikari.Embed(title="Response", description="model: text-davinci-002")
     embed.add_field(":", interaction[0])
-    ctx.respond(embed)
+    await ctx.respond(embed)
 
 
 
