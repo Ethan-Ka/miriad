@@ -396,8 +396,10 @@ async def text(ctx):
     channel = ctx.channel_id
     prompt = ctx.options.prompt
     interaction = openAI.text(prompt)
-    embed = hikari.Embed(title="Response", description="model: text-davinci-002")
-    embed.add_field(":", interaction[0])
+    embed = hikari.Embed(title="Response", color=embedColors.blue, description="model: text-davinci-002")
+    embed.add_field("Prompt: "+prompt, interaction[0])
+    embed.set_author(
+              name=ctx.author.username, icon=ctx.author.display_avatar_url)
     await ctx.respond(embed)
 
 
