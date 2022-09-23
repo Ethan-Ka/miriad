@@ -71,7 +71,7 @@ def consoleLog(type, message):
 
 bot = lightbulb.BotApp(
     token=os.environ["TOKEN"],
-    intents = hikari.Intents.ALL
+    #intents = hikari.Intents.ALL
     #default_enabled_guilds=(985315511728492616)
     #default enabled guilds: remove after testing.)
 )
@@ -388,20 +388,39 @@ event = threading.Event()
                   "prompt to send",
                   type=hikari.OptionType.STRING,
                   modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True
+                  required=True,
+                  
 )
-@lightbulb.command("text", "send a text prompt", auto_defer=True)
+@lightbulb.option("model",
+                  "AI to use",
+                  type=hikari.OptionType.STRING,
+                  modifier=lightbulb.OptionModifier.CONSUME_REST,
+                  required=True,
+                  choices=(
+                  "text-davinci-002",
+                  "text-curie-001",
+                  "text-babbage-001",
+                  "text-ada-001"
+                  )
+)
+@lightbulb.command("prompt", "send AI a prompt", auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def text(ctx):
     channel = ctx.channel_id
     prompt = ctx.options.prompt
-    interaction = openAI.text(prompt)
-    embed = hikari.Embed(title="Response", color=embedColors.blue, description="model: text-davinci-002")
+    model = ctx.options.model
+    #print(model)
+    
+    interaction = openAI.text(prompt, model)
+    reason = interaction[2]
+    if reason == "stop":
+      reason = "Finished Successfully"
+    embed = hikari.Embed(title="Response", color=embedColors.blue, description=f"**Finish Reason**: {reason}\n**Model**: {model}")
     embed.add_field("Prompt: "+prompt, interaction[0])
     embed.set_author(
               name=ctx.author.username, icon=ctx.author.display_avatar_url)
     await ctx.respond(embed)
-
+    
 
 
 @bot.command
@@ -1164,7 +1183,7 @@ async def seecoins(ctx):
 
 #start web server
 keep_alive.keep_alive()
-try:
-  bot.run()
-except:
-  os.system("python main.py")
+#try:
+bot.run()
+#except:
+#  os.system("python main.py")
