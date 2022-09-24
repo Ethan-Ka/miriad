@@ -365,7 +365,7 @@ async def messageCreated(event):
             #  cc.pushCCDatabase()
               
             else:
-              logmessage.add_field("Failed", f"Returned {str(interaction)}"  
+              logmessage.add_field("Failed", f"Returned {str(interaction)}")
             await logMessage(logmessage)
             #addCoins
         elif level < 10:
@@ -379,7 +379,7 @@ async def messageCreated(event):
             #  cc.pushCCDatabase()
               
             else:
-              logmessage.add_field("Failed", f"Returned {str(interaction)}"  
+              logmessage.add_field("Failed", f"Returned {str(interaction)}") 
             await logMessage(logmessage)
         else:
             print("uh oh")
