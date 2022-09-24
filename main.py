@@ -358,10 +358,14 @@ async def messageCreated(event):
             amount_to_add = 50
             balance = cc.seeCoins(guild, str(user)) #get balance
             amount = int(amount_to_add) + int(balance)
-            cc.setCoins(guild, str(user), amount, "624384023132635146")
-            logmessage.add_field("Level Up!: ",
+            interaction = cc.setCoins(guild, str(user), amount, "624384023132635146")
+            if interaction:
+              logmessage.add_field("Level Up!: ",
                                  "+" + str(amount_to_add) + " cream coins")
-            cc.pushCCDatabase()
+            #  cc.pushCCDatabase()
+              
+            else:
+              logmessage.add_field("Failed", f"Returned {str(interaction)}"  
             await logMessage(logmessage)
             #addCoins
         elif level < 10:
@@ -369,10 +373,14 @@ async def messageCreated(event):
             balance = cc.seeCoins(guild, str(user)) #get balance
             amount = int(amount_to_add) + int(balance) #add coins to balance
             cc.setCoins(guild, str(user), amount, "624384023132635146") #set the coins to amount + balance
-            logmessage.add_field("Level Up!: ",
-                                 "+" + str(amount_to_add) + " cream coins") #add field
-            cc.pushCCDatabase() #push the database
-            await logMessage(logmessage) # log message
+            if interaction:
+              logmessage.add_field("Level Up!: ",
+                                 "+" + str(amount_to_add) + " cream coins")
+            #  cc.pushCCDatabase()
+              
+            else:
+              logmessage.add_field("Failed", f"Returned {str(interaction)}"  
+            await logMessage(logmessage)
         else:
             print("uh oh")
 
