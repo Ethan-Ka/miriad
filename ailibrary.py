@@ -13,7 +13,7 @@ class AILibrary:
         interaction = openai.Completion.create(
         model=model3,
         prompt=prompt,
-        max_tokens=600,
+        max_tokens=900,
         temperature=0
         )
         list = {
