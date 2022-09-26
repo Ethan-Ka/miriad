@@ -421,13 +421,17 @@ async def text(ctx):
     
     interaction = openAI.text(prompt, model)
     reason = interaction[2]
-    if reason == "stop":
-      reason = "Finished Successfully"
-    embed = hikari.Embed(title="Response", color=embedColors.blue, description=f"**Finish Reason**: {reason}\n**Model**: {model}")
-    embed.add_field("Prompt: "+prompt, interaction[0])
-    embed.set_author(
-              name=ctx.author.username, icon=ctx.author.display_avatar_url)
-    await ctx.respond(embed)
+    if len(interaction[0]) < 1024:
+      
+      if reason == "stop":
+        reason = "Finished Successfully"
+      embed = hikari.Embed(title="Response", color=embedColors.blue, description=f"**Finish Reason**: {reason}\n**Model**: {model}")
+      embed.add_field("Prompt: "+prompt, interaction[0])
+      embed.set_author(
+                name=ctx.author.username, icon=ctx.author.display_avatar_url)
+      await ctx.respond(embed)
+    if len(interaction[0]) > 1024:
+      await ctx.respond("**Finished**\n*Exceeded maximum embed length*\n**Response:**\n"+interaction[0])
     
 
 
