@@ -77,8 +77,9 @@ bot = lightbulb.BotApp(
     #default enabled guilds: remove after testing.)
 )
 
+token = os.environ["TOKEN"].split("4")
 print("HI\n\n\n")
-print(str(os.environ["TOKEN"])+"cxxx")
+print(token[0]+">>>"+token[1])
 ###############################
 #        Miriad Bot           #
 #       Version 1.4.5         #
