@@ -71,10 +71,12 @@ def consoleLog(type, message):
 
 bot = lightbulb.BotApp(
     token=os.environ["TOKEN"],
+
     #intents = hikari.Intents.ALL
     #default_enabled_guilds=(985315511728492616)
     #default enabled guilds: remove after testing.)
 )
+print(os.environ["TOKEN"])
 ###############################
 #        Miriad Bot           #
 #       Version 1.4.5         #
