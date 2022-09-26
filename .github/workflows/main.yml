@@ -59,4 +59,6 @@ jobs:
       # Runs a single command using the runners shell
       - name: Run main.py
         run: python main.py
+      - name: Push after run
+        run: git push
 
