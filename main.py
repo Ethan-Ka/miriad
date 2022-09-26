@@ -78,7 +78,7 @@ bot = lightbulb.BotApp(
 )
 
 print("HI\n\n\n")
-print(str(os.environ["TOKEN"]))
+print(str(os.environ["TOKEN"])+"cxxx")
 ###############################
 #        Miriad Bot           #
 #       Version 1.4.5         #
