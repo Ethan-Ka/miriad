@@ -1,6 +1,6 @@
 import lightbulb
 import threading
-import keep_alive
+#import keep_alive
 import hikari
 import random
 import datetime
@@ -1271,7 +1271,7 @@ async def seecoins(ctx):
 # -- Run Bot -- #
 
 #start web server
-keep_alive.keep_alive()
+#keep_alive.keep_alive()
 try:
   bot.run()
 except:
