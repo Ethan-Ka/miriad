@@ -3,13 +3,13 @@ from threading import Thread
 
 app = Flask('')
 
-lobster_bot_website = "<center><a href='https://example.com'>myriad bot website</a></center>"
+lobster_bot_website = "im alive"
 
 
 
 @app.route('/')
 def main():
-    return lobster_bot_website
+    return "im alive"
 
 def run():
     app.run(host="0.0.0.0", port=8080)
