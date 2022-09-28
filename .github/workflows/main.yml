@@ -52,15 +52,15 @@ jobs:
         run: |
           python -m pip install hikari
           python -m hikari
-#          python -m pip install hikari-miru
-#          python -m pip install openai
-#          python -m pip install hikari-lightbulb
-#          python -m pip install flask
-#          python -m pip install datetime
-#          python -m pip install schedule
+          python -m pip install hikari-miru
+          python -m pip install openai
+          python -m pip install hikari-lightbulb
+          python -m pip install flask
+          python -m pip install datetime
+          python -m pip install schedule
       # Runs a single command using the runners shell
-#      - name: Run main.py
-#        run: python main.py
+      - name: Run main.py
+        run: python main.py
 #      - name: Push after run
 #        run: git push
 
