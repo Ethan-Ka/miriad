@@ -1,4 +1,3 @@
-
 import lightbulb
 import threading
 import keep_alive
@@ -1273,8 +1272,7 @@ async def seecoins(ctx):
 
 #start web server
 keep_alive.keep_alive()
-#try:
-#  bot.run()
-bot.run()
-#except:
-#  os.system("python main.py")
+try:
+  bot.run()
+except:
+  os.system("python main.py")
