@@ -1,3 +1,4 @@
+
 import lightbulb
 import threading
 import keep_alive
@@ -10,10 +11,16 @@ import json
 import schedule
 import re
 import ailibrary
-
+import miru
+import cache
 
 openAI = ailibrary.AILibrary()
 
+cache = cache.Cache(
+    immediate_push=True,
+    use_file=True#,
+    #auto_execute_on_run=False
+)
 
 class embedColors:
   green = "#57F287"
@@ -69,6 +76,71 @@ def consoleLog(type, message):
       print(" * " + message)
 
 
+global myViewUser
+myViewUser = ""
+global myViewGuild
+myViewGuild = ""
+class AICommand(miru.View):
+    @miru.button(label="Make Conversation",  style=hikari.ButtonStyle.PRIMARY)
+    async def make_convo(self, button: miru.Button, ctx: miru.Context) -> None:
+        guild = ctx.guild_id
+        author = ctx.user.id
+        myViewUser = ctx.user.id
+        myViewGuild = ctx.guild_id
+        job = cache.fetch_job(author+guild)
+        splitted = job.split("=-=")
+        existing = splitted[0]
+        model = splitted[1]
+        cache.delete_job(author+guild)
+        if not "AI: " in existing:
+          await ctx.respond(f"/prompt model:{model} prompt:AI: {existing.strip()} Human:", flags=hikari.MessageFlag.EPHEMERAL)
+        else:
+          await ctx.respond(f"/prompt model:{model} prompt: {existing.strip()}\n Human:", flags=hikari.MessageFlag.EPHEMERAL)
+          
+#    @miru.button(emoji=chr(9209), style=hikari.ButtonStyle.DANGER, row=2)
+#   async def stop_button(self, button: miru.Button, ctx: miru.Context):
+#        self.stop() # Stop listening for interactions
+          
+class confirmDelete(miru.View):
+    @miru.button(label="Yes",  style=hikari.ButtonStyle.DANGER)
+    async def make_convo(self, button: miru.Button, ctx: miru.Context) -> None:
+        user = str(ctx.user.id)
+        message = str(ctx.message.id)
+        guild = str(ctx.guild_id)
+
+        job = cache.fetch_job(message+guild)
+        
+        target = job
+        member_name = (await bot.rest.fetch_user(int(target))).username
+        interaction = cc.deleteUser(guild, str(target), str(user))
+        if interaction == "guildnotfound":
+            embed = hikari.Embed(title="Error",
+                                 description="Guild Not Found.",
+                                 color=embedColors.red)
+            embed.add_field("Error:", "creamCoin.guildnotfound error")
+            await ctx.respond(embed)
+        if interaction == "noperms":
+            embed = hikari.Embed(title="Error",
+                                 description="You are not admin.",
+                                 color=embedColors.red)
+            embed.add_field("Error:", "creamCoin.noperms error")
+            await ctx.respond(embed)
+        if interaction == True:
+            embed = hikari.Embed(title="Success!",
+                                 description="User " + target + " deleted.",
+                                 color=embedColors.green)
+            #logmessage = embed(
+            #hikari.Embed(title="Member Deleted", 
+            #           description="A Member was deleted from the CreamCoin Database", 
+            #           color=embedColors.green)
+            #)
+            #logmessage.add_field("Removed user from Cream Coin Database", f"Member {member_name} removed from the Cream Coin Database") # add field
+            #await log(logmessage) #log
+            #await ctx.respond(embed)
+      
+            await ctx.respond(embed, flags=hikari.MessageFlag.EPHEMERAL)
+
+
 bot = lightbulb.BotApp(
     token=os.environ["TOKEN"],
 
@@ -76,7 +148,7 @@ bot = lightbulb.BotApp(
     #default_enabled_guilds=(985315511728492616)
     #default enabled guilds: remove after testing.)
 )
-
+miru.load(bot)
 #token = os.environ["TOKEN"].split("4")
 #print("HI\n\n\n")
 #print(token[0]+">>>"+token[1])
@@ -120,7 +192,11 @@ config = r"config.txt"
 global doneList
 doneList = r"doneRoles.txt"
 
+
+
+
 # -- Create functions -- #
+
 
 
 def getSetting():
@@ -280,6 +356,7 @@ async def member_join(event):
   interaction = cc.create_user(guild, member_id, False, False, member_name,"624384023132635146") # add to database
   # create log embed
   if interaction:
+    
     logmessage = embed(
       hikari.Embed(title="Member Joined", 
                    description="A Member Joined The Server", 
@@ -416,12 +493,15 @@ event = threading.Event()
                   "text-ada-001"
                   )
 )
-@lightbulb.command("prompt", "send AI a prompt", auto_defer=True)
+@lightbulb.command("prompt", "send AI a prompt", auto_defer=True, ephemeral=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def text(ctx):
+    view = AICommand(timeout=60)
     channel = ctx.channel_id
     prompt = ctx.options.prompt
     model = ctx.options.model
+    author = ctx.author.id
+    guild = ctx.guild_id
     #print(model)
     
     interaction = openAI.text(prompt, model)
@@ -430,11 +510,22 @@ async def text(ctx):
       
       if reason == "stop":
         reason = "Finished Successfully"
-      embed = hikari.Embed(title="Response", color=embedColors.blue, description=f"**Finish Reason**: {reason}\n**Model**: {model}")
-      embed.add_field("Prompt: "+prompt, interaction[0])
-      embed.set_author(
-                name=ctx.author.username, icon=ctx.author.display_avatar_url)
-      await ctx.respond(embed)
+
+        embed = hikari.Embed(title="Response", color=embedColors.blue, description=f"**Finish Reason**: {reason}\n**Model**: {model}")
+        embed.add_field("Prompt: "+prompt, interaction[0])
+        embed.set_author(
+                  name=ctx.author.username, icon=ctx.author.display_avatar_url)
+      
+      
+      # Add the button to the action row. This **must** be called after you have finished building every    
+        message = await bot.rest.create_message(channel=ctx.channel_id, content=embed, components=view.build())
+        cache.add_job(interaction[0]+"=-="+model, id=author+guild)
+      # individual component.
+        view.start(message)  # Start listening for interactions
+        await view.wait()
+        await ctx.respond("Request Completed!")
+
+
     if len(interaction[0]) > 1024:
       await ctx.respond("**Finished**\n*Exceeded maximum embed length*\n**Response:**\n"+interaction[0])
     
@@ -866,12 +957,10 @@ async def createUser(ctx):
   if interaction:
       embed = hikari.Embed(title="Success!",
                            description="User " + target + " created.")
-      logmessage = embed(
-      hikari.Embed(title="Member Joined", 
-                   description="A Member Joined The Server", 
+      logmessage = hikari.Embed(title="Member Created", 
+                   description="A Member Created In The CC Database", 
                    color=embedColors.green)
-      )
-      logmessage.add_field("Added to Cream Coin Database", f"Member {member_name} added to the Cream Coin Database") # add field
+      logmessage.add_field("Added to Cream Coin Database", f"Member {name} added to the Cream Coin Database") # add field
       await log(logmessage) #log 
       await ctx.respond(embed)
       
@@ -889,39 +978,23 @@ async def createUser(ctx):
                   type=hikari.OptionType.USER,
                   modifier=lightbulb.OptionModifier.CONSUME_REST,
                   required=True)
-@lightbulb.command("delete", "delete user", ephemeral=True, auto_defer=True)
+@lightbulb.command("delete", "delete user")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def deleteUser(ctx):
+    
     user = str(ctx.author.id)
     guild = str(ctx.guild_id)
+    view = confirmDelete(timeout=60)
     target = str(ctx.options.user.id)
-    interaction = cc.deleteUser(guild, target, user)
-    if interaction == "guildnotfound":
-        embed = hikari.Embed(title="Error",
-                             description="Guild Not Found.",
-                             color=embedColors.red)
-        embed.add_field("Error:", "creamCoin.guildnotfound error")
-        await ctx.respond(embed)
-    if interaction == "noperms":
-        embed = hikari.Embed(title="Error",
-                             description="You are not admin.",
-                             color=embedColors.red)
-        embed.add_field("Error:", "creamCoin.noperms error")
-        await ctx.respond(embed)
-    if interaction == True:
-        embed = hikari.Embed(title="Success!",
-                             description="User " + target + " deleted.",
-                             color=embedColors.green)
-        logmessage = embed(
-        hikari.Embed(title="Member Joined", 
-                   description="A Member Joined The Server", 
-                   color=embedColors.green)
-        )
-        logmessage.add_field("Removed user from Cream Coin Database", f"Member {member_name} removed from the Cream Coin Database") # add field
-        await log(logmessage) #log
-        await ctx.respond(embed)
 
 
+    embed = hikari.Embed(title="Confirm Deletion", description=f"Are you sure you want to delete user <@{target}>?", color=embedColors.red)
+    message = await bot.rest.create_message(channel=ctx.channel_id, content=embed, components=view.build()#, #flags=hikari.MessageFlag.EPHEMERAL
+                                           )
+    id = message.id
+    view.start(message)  
+    cache.add_job(str(target), str(id)+str(guild))
+    
 @bot.command
 @lightbulb.option("amount",
                   "amount to set coins to",
