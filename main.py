@@ -531,7 +531,7 @@ async def text(ctx):
 
 
 @bot.command
-@lightbulb.add_checks(lightbulb.checks.has_role_permissions(16))
+@lightbulb.add_checks(lightbulb.checks.has_role_permissions(32))
 @lightbulb.option("seconds",
                   "time to run the poll for(seconds)",
                   type=hikari.OptionType.INTEGER,
