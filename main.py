@@ -13,6 +13,7 @@ import ailibrary
 import miru
 import cache
 
+#os.system("miru")
 openAI = ailibrary.AILibrary()
 
 cache = cache.Cache(
@@ -489,7 +490,8 @@ event = threading.Event()
                   "text-davinci-002",
                   "text-curie-001",
                   "text-babbage-001",
-                  "text-ada-001"
+                  "text-ada-001",
+                  "Debug Python"
                   )
 )
 @lightbulb.command("prompt", "send AI a prompt", auto_defer=True, ephemeral=True)
@@ -502,31 +504,37 @@ async def text(ctx):
     author = ctx.author.id
     guild = ctx.guild_id
     #print(model)
-    
-    interaction = openAI.text(prompt, model)
-    reason = interaction[2]
-    if len(interaction[0]) < 1024:
-      
-      if reason == "stop":
-        reason = "Finished Successfully"
-
-        embed = hikari.Embed(title="Response", color=embedColors.blue, description=f"**Finish Reason**: {reason}\n**Model**: {model}")
-        embed.add_field("Prompt: "+prompt, interaction[0])
-        embed.set_author(
-                  name=ctx.author.username, icon=ctx.author.display_avatar_url)
-      
+    if model == "Debug Python":
+      interaction = openAI.debug(prompt)
+      reason = interaction[2]
+      await ctx.respond(f"```{interaction[0]}```")
+    #elif 
+    else:
+      interaction = openAI.text(prompt, model)
+      reason = interaction[2]
+      if len(interaction[0]) < 1024:
+        
+        if reason == "stop":
+          reason = "Finished Successfully"
+  
+          embed = hikari.Embed(title="Response", color=embedColors.blue, description=f"**Finish Reason**: {reason}\n**Model**: {model}")
+          embed.add_field("Prompt: "+prompt, interaction[0])
+          embed.set_author(
+                    name=ctx.author.username, icon=ctx.author.display_avatar_url)
+        
       
       # Add the button to the action row. This **must** be called after you have finished building every    
         message = await bot.rest.create_message(channel=ctx.channel_id, content=embed, components=view.build())
-        cache.add_job(interaction[0]+"=-="+model, id=author+guild)
-      # individual component.
-        view.start(message)  # Start listening for interactions
-        await view.wait()
+              # individual component.
+        if not model == "Debug Python":
+          cache.add_job(interaction[0]+"=-="+model, id=author+guild)
+          view.start(message)  # Start listening for interactions
+          await view.wait()
         await ctx.respond("Request Completed!")
 
 
-    if len(interaction[0]) > 1024:
-      await ctx.respond("**Finished**\n*Exceeded maximum embed length*\n**Response:**\n"+interaction[0])
+      if len(interaction[0]) > 1024:
+        await ctx.respond("**Finished**\n*Exceeded maximum embed length*\n**Response:**\n"+interaction[0])
     
 
 
@@ -726,8 +734,10 @@ async def uptime(ctx):
     embed = hikari.Embed(title="Uptime",
                          description="Bot has been up for " + str(uptime),
                          color=randC)
-    embed.set_footer("requested by " + ctx.author.mention + " | color: " +
+    embed.set_footer("requested by " + str(ctx.author) + " | color: " +
                      randC)
+    downIn = now - datetime.timedelta(hours=6)
+    embed.add_field("Down in", f"The bot will go down in {downIn}")
     await ctx.respond(embed)
 
 
