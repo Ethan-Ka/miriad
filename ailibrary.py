@@ -9,7 +9,7 @@ class AILibrary:
         openai.api_key = API_KEY
         openai.Model.list()
     def debug(self, prompt):
-      response = openai.Completion.create(
+      interaction = openai.Completion.create(
       model="text-davinci-002",
       prompt=f"##### Fix bugs in the below function\n \n### Buggy Python\n{prompt}\n### Fixed Python",
       temperature=0,
