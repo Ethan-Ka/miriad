@@ -10,7 +10,7 @@ class AILibrary:
         openai.Model.list()
     def debug(self, prompt):
       response = openai.Completion.create(
-      model="code-davinci-edit-001",
+      model="text-davinci-002",
       prompt=f"##### Fix bugs in the below function\n \n### Buggy Python\n{prompt}\n### Fixed Python",
       temperature=0,
       max_tokens=500,
