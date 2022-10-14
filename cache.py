@@ -8,7 +8,7 @@ import pymongo
 class mongoDb():
     def __init__(self):
         self.url = "https://data.mongodb-api.com/app/data-fqmbw/endpoint/data/v1"
-        self.url = f"mongodb+srv://miriad:{os.environ["MONGOPW"]}@cluster0.ydvin7k.mongodb.net/?retryWrites=true&w=majority"
+        self.url = fr"mongodb+srv://miriad:{os.environ["MONGOPW"]}@cluster0.ydvin7k.mongodb.net/?retryWrites=true&w=majority"
         self.myclient = pymongo.MongoClient(self.url)
         
         server_api=ServerApi('1'))
