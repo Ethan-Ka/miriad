@@ -50,7 +50,6 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: import
         run: |
-          dig +short myip.opendns.com @resolver1.opendns.com
           python -m pip install hikari
           python -m hikari
           python -m pip install hikari-miru
