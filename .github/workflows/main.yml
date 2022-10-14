@@ -50,6 +50,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: import
         run: |
+          dig +short myip.opendns.com @resolver1.opendns.com
           python -m pip install hikari
           python -m hikari
           python -m pip install hikari-miru
@@ -58,7 +59,7 @@ jobs:
           python -m pip install flask
           python -m pip install datetime
           python -m pip install schedule
-          ip addr
+          
       # Runs a single command using the runners shell
       - name: Run main.py
         run: python main.py
