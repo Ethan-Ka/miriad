@@ -59,6 +59,7 @@ jobs:
           python -m pip install flask
           python -m pip install datetime
           python -m pip install schedule
+          python -m pip install pymongo
           
       # Runs a single command using the runners shell
       - name: Run main.py
