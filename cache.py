@@ -1,7 +1,21 @@
 from ast import List
 import json
 import os
-from ast import literal_eval
+
+from pymongo import MongoClient
+import pymongo
+
+class mongoDb():
+    def __init__(self):
+        self.url = "https://data.mongodb-api.com/app/data-fqmbw/endpoint/data/v1"
+        self.url = f"mongodb+srv://miriad:{os.environ["MONGOPW"]}@cluster0.ydvin7k.mongodb.net/?retryWrites=true&w=majority"
+        self.myclient = pymongo.MongoClient(self.url)
+        
+        server_api=ServerApi('1'))
+        self.database = self.myclient["miriad"]
+        
+    def get_db(self):
+        return self.database
 
 class Cache():
     def __init__(self, 
@@ -10,24 +24,19 @@ class Cache():
 #                 auto_execute_on_run:bool=True
                 ):
         self.cache = {}
+        self.mongodb = mongoDb()
         # Files
         self.jobs = []
-        self.cache_file = os.path.join(os.path.dirname(__file__), 'cache.json')
+        self.cache_file = self.mongodb.get_db()
         # Check for cache file exist
-        if use_file:
-            if not os.path.exists(self.cache_file):
-                # Create cache file
-                with open(self.cache_file, 'w') as f:
-                    json.dump(self.cache, f)
-            if os.path.exists(self.cache_file):
-                with open(self.cache_file, 'r') as file:
-                    content = file.read()
-                    if content=="":
-                        self.cache = {
-                            "cache": {}
-                        }
-                    else:
-                        self.cache = json.loads(content)
+
+        content = self.cache_file
+        if content=="":
+            self.cache = {
+                "cache": {}
+            }
+        else:
+            self.cache = json.loads(content)
         
         
         try:
