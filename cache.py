@@ -13,7 +13,7 @@ class Cache():
 
         # Files
         self.jobs = []
-        self.cache_file = self.mongodb.get_db()
+        self.cache_file = "cache.json"
         # Check for cache file exist
 
         content = self.cache_file
