@@ -2,20 +2,6 @@ from ast import List
 import json
 import os
 
-from pymongo import MongoClient
-import pymongo
-
-class mongoDb():
-    def __init__(self):
-        self.url = "https://data.mongodb-api.com/app/data-fqmbw/endpoint/data/v1"
-        self.url = fr"mongodb+srv://miriad:{os.environ["MONGOPW"]}@cluster0.ydvin7k.mongodb.net/?retryWrites=true&w=majority"
-        self.myclient = pymongo.MongoClient(self.url)
-        
-        server_api=ServerApi('1'))
-        self.database = self.myclient["miriad"]
-        
-    def get_db(self):
-        return self.database
 
 class Cache():
     def __init__(self, 
@@ -24,7 +10,7 @@ class Cache():
 #                 auto_execute_on_run:bool=True
                 ):
         self.cache = {}
-        self.mongodb = mongoDb()
+
         # Files
         self.jobs = []
         self.cache_file = self.mongodb.get_db()
