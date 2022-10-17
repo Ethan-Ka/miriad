@@ -15,8 +15,8 @@ class Cache():
         self.jobs = []
         self.cache_file = "cache.json"
         # Check for cache file exist
-
-        content = self.cache_file
+        with open(self.cache_file, 'r') as f:
+            content = f.read()
         if content=="":
             self.cache = {
                 "cache": {}
