@@ -1,16 +1,54 @@
 import os
 import json
+os.system("python -m pip install \"pymongo[srv]\"")
+from pymongo import MongoClient
+import pymongo
+
 
 class cCoin:
     pass
     #creamCoin = dict()
+
+
+class mongoDb():
+    def __init__(self):
+        self.url = "https://data.mongodb-api.com/app/data-fqmbw/endpoint/data/v1"
+        
+        self.passw = os.environ["MONGOPW"].strip()
+        self.url = fr"mongodb+srv://miriad:{self.passw}@cluster0.ydvin7k.mongodb.net/?retryWrites=true&w=majority"
+        self.myclient = pymongo.MongoClient(self.url)
+        
+        self.database = self.myclient["miriad"]
+        self.database = self.database.miriad
+    def get_db(self):
+        results = self.database.find({"_id":"daba"})
+        list = []
+        for i in results:
+          list.append(i)
+        #dict = json.loads(list[0])
+        dict = list[0]
+        return json.loads(dict['"data"'])
+        
+    def add_db(self, database):
+        false = False
+        true = True
+        database = {"_id":"daba", 'data':{"942477753536634962": {"624384023132635146": {"coins": 99, "disabled": false, "admin": true, "username": "thedankboi"}, "770239477749776414": {"coins": 100, "disabled": false, "admin": false, "username": "abbskbab"}, "737363673223266395": {"coins": 100, "disabled": false, "admin": false, "username": "lottie"}, "790703548161196052": {"coins": 100, "disabled": false, "admin": false, "username": "saveme"}}, "storage": {"leaderboard": "1017476925977022495"}}
+        }
+        self.database.insert_one(database)
+    def update_db(self, database):
+      database = json.loads(json.dumps(database))
+      strings = json.dumps(database)
+      self.database.update_one({"_id":"daba"}, {"$set": {'"data"':strings,} })
+
+
+
 
 class ccDatabase():
     global databasePath
     databasePath = r"data.txt"
 
     def __init__(self):
-        pass
+        self.mongodb = mongoDb()
 
     def isAdmin(self, guild, id):
       guild = str(guild)
@@ -33,13 +71,12 @@ class ccDatabase():
         return e
     def loadCCDatabase(self):
     # read the CreamCoin database
-        database = open(databasePath, 'r')
-        content = database.read()
+        
         global creamCoin
-        creamCoin = json.loads(content)
+        creamCoin = self.mongodb.get_db()
         #(json.dumps(content))
         #print(json.dumps(creamCoin))
-        database.close()
+        
     def creamCoinReturn(self):
         return creamCoin
     def createGuild(self, guild):
@@ -174,10 +211,9 @@ class ccDatabase():
           return "targetnotfound"
     def pushCCDatabase(self):
         # push the CreamCoin database
-        database = open(databasePath, 'w')
-        database.write(json.dumps(creamCoin))
-        #print(json.dumps(creamCoin))
-        database.close()
+        self.mongo.update_db(creamCoin)
+    
+        #mongodb stuff here
     
 
 #toCreate = str(target)+{":\n\n'coins':100,\n\n'disabled':False\n\n"}
