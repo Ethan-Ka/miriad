@@ -211,7 +211,7 @@ class ccDatabase():
           return "targetnotfound"
     def pushCCDatabase(self):
         # push the CreamCoin database
-        self.mongo.update_db(creamCoin)
+        self.mongodb.update_db(creamCoin)
     
         #mongodb stuff here
     
