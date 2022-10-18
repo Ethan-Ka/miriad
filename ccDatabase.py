@@ -108,6 +108,7 @@ class ccDatabase():
   # do this in ccDatabase.py and return the list
   # for every key, leaderboard spot 1 to end:
   #embed.add_field(place+"Name", coins)
+      self.loadCCDatabase()
       list = {}
       for key in creamCoin[guild].keys():
         value1 = str(key)
@@ -212,6 +213,7 @@ class ccDatabase():
     def pushCCDatabase(self):
         # push the CreamCoin database
         self.mongodb.update_db(creamCoin)
+        self.loadCCDatabase()
     
         #mongodb stuff here
     
