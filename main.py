@@ -540,7 +540,7 @@ async def text(ctx):
     
 @bot.command
 @lightbulb.command("shutdown", "shut the bot down", auto_defer=True)
-@lightbulb.impliments(lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def shutdown(ctx):
     bot.rest.close(bot)
 
