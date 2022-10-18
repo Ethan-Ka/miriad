@@ -543,7 +543,7 @@ async def text(ctx):
 @lightbulb.implements(lightbulb.SlashCommand)
 async def shutdown(ctx):
     
-    await bot.rest.close()
+    await lightbulb.BotApp.close()
     await ctx.respond("shutting down...")    
 
 @bot.command
