@@ -537,6 +537,12 @@ async def text(ctx):
         await ctx.respond("**Finished**\n*Exceeded maximum embed length*\n**Response:**\n"+interaction[0])
     
 
+    
+@bot.command
+@lightbulb.command("shutdown", "shut the bot down", auto_defer=True)
+@lightbulb.impliments(lightbulb.SlashCommand)
+async def shutdown(ctx):
+    bot.rest.close(bot)
 
 @bot.command
 @lightbulb.add_checks(lightbulb.checks.has_role_permissions(32))
