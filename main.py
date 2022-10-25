@@ -10,8 +10,8 @@ import json
 import schedule
 import re
 import ailibrary
-os.system("pip install --force-reinstall --no-cache-dir git+https://github.com/thesadru/hikari@3338f586a70f35c8edb7e556ba2faba17fa5b8fe")
-os.system("pip install -U git+https://github.com/HyperGH/hikari-miru@feature/modals")
+#os.system("pip install --force-reinstall --no-cache-dir git+https://github.com/thesadru/hikari@3338f586a70f35c8edb7e556ba2faba17fa5b8fe")
+os.system("pip install -U git+https://github.com/HyperGH/hikari-miru@25d0f46ef8f326cee75f0da9495fd3d02d1212c0")
 import miru
 import cache
 
