@@ -10,8 +10,8 @@ import json
 import schedule
 import re
 import ailibrary
-#os.system("pip install --force-reinstall --no-cache-dir git+https://github.com/thesadru/hikari@3338f586a70f35c8edb7e556ba2faba17fa5b8fe")
-os.system("pip install -U git+https://github.com/HyperGH/hikari-miru/tree/4d6e56b0a14f848b3c4abd8849e1ce7f24b87d2b")
+os.system("pip install --force-reinstall --no-cache-dir git+https://github.com/thesadru/hikari@3338f586a70f35c8edb7e556ba2faba17fa5b8fe")
+os.system("pip install -U hikari-miru@git+https://github.com/HyperGH/hikari-miru/tree/4d6e56b0a14f848b3c4abd8849e1ce7f24b87d2b")
 import miru
 import cache
 
