@@ -10,8 +10,8 @@ import json
 import schedule
 import re
 import ailibrary
-os.system("pip install hikari-miru")
-os.system("pip install --force-reinstall --no-cache-dir hikari-miru@git+https://github.com/HyperGH/hikari-miru/tree/4d6e56b0a14f848b3c4abd8849e1ce7f24b87d2b")
+#os.system("pip install hikari-miru")
+os.system("pip install hikari-miru @git+https://github.com/HyperGH/hikari-miru/tree/4d6e56b0a14f848b3c4abd8849e1ce7f24b87d2b")
 #os.system("pip install -U hikari-miru@git+https://github.com/HyperGH/hikari-miru/tree/4d6e56b0a14f848b3c4abd8849e1ce7f24b87d2b")
 import miru
 import cache
