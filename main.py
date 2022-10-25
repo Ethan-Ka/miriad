@@ -197,7 +197,8 @@ class confirmDelete(miru.View):
 bot = lightbulb.BotApp(
     token=os.environ["TOKEN"].strip(),
     banner=None,
-    intents = hikari.Intents.ALL
+    intents = hikari.Intents.ALL,
+    replace_attachments = False #temp fix
     #default_enabled_guilds=(985315511728492616)
     #default enabled guilds: remove after testing.)
 )
