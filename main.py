@@ -3,13 +3,15 @@ import threading
 #import keep_alive
 import hikari
 import random
-import datetime
+from datetime import datetime, timedelta
 import ccDatabase
 import os
 import json
 import schedule
 import re
 import ailibrary
+#os.system("pip install --force-reinstall --no-cache-dir git+https://github.com/thesadru/hikari@3338f586a70f35c8edb7e556ba2faba17fa5b8fe")
+os.system("pip install -U git+https://github.com/HyperGH/hikari-miru@feature/modals")
 import miru
 import cache
 
@@ -37,12 +39,12 @@ class color:
 
 
 #format date and time for uptime commands
-print(datetime.datetime.now())
+print(datetime.now())
 dtstr = "2022-09-06 14:27:47"
 global dt_formatted
-dt_formatted = datetime.datetime.fromisoformat(dtstr)
+dt_formatted = datetime.fromisoformat(dtstr)
 global startTime
-startTime = datetime.datetime.now(dt_formatted.tzinfo)
+startTime = datetime.now(dt_formatted.tzinfo)
 
 # global variables #
 global version
@@ -80,9 +82,13 @@ global myViewUser
 myViewUser = ""
 global myViewGuild
 myViewGuild = ""
-class AICommand(miru.View):
-    @miru.button(label="Make Conversation",  style=hikari.ButtonStyle.PRIMARY)
-    async def make_convo(self, button: miru.Button, ctx: miru.Context) -> None:
+
+
+
+class MakeConvo(miru.Modal):
+  name = miru.TextInput(label="Reply", placeholder="Message to reply with", required=True)
+
+  async def callback(self, ctx: miru.ModalContext) -> None:
         guild = ctx.guild_id
         author = ctx.user.id
         myViewUser = ctx.user.id
@@ -91,16 +97,63 @@ class AICommand(miru.View):
         splitted = job.split("=-=")
         existing = splitted[0]
         model = splitted[1]
-        cache.delete_job(author+guild)
+        
+        #print(model)
+        
         if not "AI: " in existing:
-          await ctx.respond(f"/prompt model:{model} prompt:AI: {existing.strip()} Human:", flags=hikari.MessageFlag.EPHEMERAL)
+          self.prompt = "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly."+f"AI: {existing.strip()} Human:"
         else:
-          await ctx.respond(f"/prompt model:{model} prompt: {existing.strip()}\n Human:", flags=hikari.MessageFlag.EPHEMERAL)
+          self.prompt = "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly."+f"{existing.strip()}\n Human:"
           
+        #await modal.send(ctx.interaction)
+        content = [value for value in ctx.values.values()][0]
+        print(content)
+        #await modal.start()
+        if content=="":
+          return
+        content = list(self.values.values())[0]
+        prompt = self.prompt+content
+      
+        interaction = openAI.text(prompt, model)
+        reason = interaction[2]
+        await ctx.respond("Interaction complete")
+        print(len(interaction[0]))
+        if len(interaction[0]) < 256:
+          if len(prompt) > 255:
+            print(len(prompt))
+            promptDisplay = prompt.rsplit(':', 1)[0]
+            promptDisplay = "Human"+promptDisplay
+          else:
+            promptDisplay = prompt
+          if reason == "stop":
+            
+            reason = "Finished Successfully"
+    
+            embed = hikari.Embed(title="Response", color=embedColors.blue, description=f"**Finish Reason**: {reason}\n**Model**: {model}")
+            embed.add_field("Prompt: "+promptDisplay, interaction[0])
+            embed.set_author(
+                      name=ctx.author.username, icon=ctx.author.display_avatar_url)
+            cache.delete_job(author+guild)
+            cache.add_job((prompt).strip().rstrip()+" AI:"+interaction[0].rstrip()+"=-="+model, id=author+guild)
+          
+          # Add the button to the action row. This **must** be called after you have finished building every
+            view = AICommand(timeout=120)
+            message = await bot.rest.create_message(channel=ctx.channel_id, content=embed, components=view.build())
+            await view.start(message)  # Start listening for interactions
+            await view.wait()
+        if len(interaction[0]) > 256:
+          await ctx.respond("**Finished**\n*Exceeded maximum embed length*\n**Response:**\n"+interaction[0])
+          cache.delete_job(author+guild)
+            
 #    @miru.button(emoji=chr(9209), style=hikari.ButtonStyle.DANGER, row=2)
 #   async def stop_button(self, button: miru.Button, ctx: miru.Context):
-#        self.stop() # Stop listening for interactions
-          
+        #self.stop()
+
+class AICommand(miru.View):
+    @miru.button(label="Make Conversation",  style=hikari.ButtonStyle.PRIMARY)
+    async def make_convo(self, button: miru.Button, ctx: miru.Context) -> None:
+        modal = MakeConvo("Reply") # Stop listening for interactions
+        await ctx.respond_with_modal(modal)
 class confirmDelete(miru.View):
     @miru.button(label="Yes",  style=hikari.ButtonStyle.DANGER)
     async def make_convo(self, button: miru.Button, ctx: miru.Context) -> None:
@@ -357,13 +410,13 @@ async def member_join(event):
   # create log embed
   if interaction:
     
-    logmessage = embed(
+    logmessage = hikari.Embed(
       hikari.Embed(title="Member Joined", 
                    description="A Member Joined The Server", 
                    color=embedColors.green)
       )
     logmessage.add_field("Added to Cream Coin Database", f"Member {member_name} added to the Cream Coin Database") # add field
-    await log(logmessage) #log 
+    await log(logmessage) #log
 
 
 @bot.listen(hikari.StartedEvent)
@@ -371,7 +424,7 @@ async def bot_started(event):
     #set now for start message in #1015726410175889489
     await retrieveUsernames()
     randC = randomColor()
-    now = datetime.datetime.now()
+    now = datetime.now()
     # Send bot has started
     embed = hikari.Embed(title="Bot has started",
                          description="Bot has started at " + str(now.hour) +
@@ -490,61 +543,46 @@ event = threading.Event()
                   "text-davinci-002",
                   "text-curie-001",
                   "text-babbage-001",
-                  "text-ada-001",
-                  "Debug Python"
+                  "text-ada-001"
                   )
 )
 @lightbulb.command("prompt", "send AI a prompt", auto_defer=True, ephemeral=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def text(ctx):
-    view = AICommand(timeout=60)
+    view = AICommand(timeout=120)
     channel = ctx.channel_id
     prompt = ctx.options.prompt
     model = ctx.options.model
     author = ctx.author.id
     guild = ctx.guild_id
     #print(model)
-    if model == "Debug Python":
-      interaction = openAI.debug(prompt)
-      reason = interaction[2]
-      await ctx.respond(f"```{interaction[0]}```")
-    #elif 
-    else:
-      interaction = openAI.text(prompt, model)
-      reason = interaction[2]
-      if len(interaction[0]) < 1024:
-        
-        if reason == "stop":
-          reason = "Finished Successfully"
-  
-          embed = hikari.Embed(title="Response", color=embedColors.blue, description=f"**Finish Reason**: {reason}\n**Model**: {model}")
-          embed.add_field("Prompt: "+prompt, interaction[0])
-          embed.set_author(
-                    name=ctx.author.username, icon=ctx.author.display_avatar_url)
-        
+    
+    interaction = openAI.text(prompt, model)
+    reason = interaction[2]
+    if len(interaction[0]) < 1024:
+      
+      if reason == "stop":
+        reason = "Finished Successfully"
+
+        embed = hikari.Embed(title="Response", color=embedColors.blue, description=f"**Finish Reason**: {reason}\n**Model**: {model}")
+        embed.add_field("Prompt: "+prompt, interaction[0])
+        embed.set_author(
+                  name=ctx.author.username, icon=ctx.author.display_avatar_url)
+      
       
       # Add the button to the action row. This **must** be called after you have finished building every    
         message = await bot.rest.create_message(channel=ctx.channel_id, content=embed, components=view.build())
-              # individual component.
-        if not model == "Debug Python":
-          cache.add_job(interaction[0]+"=-="+model, id=author+guild)
-          view.start(message)  # Start listening for interactions
-          await view.wait()
-        await ctx.respond("Request Completed!")
+        cache.add_job("Human: "+prompt.rstrip()+" AI:"+interaction[0]+"=-="+model, id=author+guild)
+      # individual component.
+        await view.start(message)  # Start listening for interactions
+        await view.wait()
+        #await ctx.respond("Request Completed!")
 
 
-      if len(interaction[0]) > 1024:
-        await ctx.respond("**Finished**\n*Exceeded maximum embed length*\n**Response:**\n"+interaction[0])
+    if len(interaction[0]) > 1024:
+      await ctx.respond("**Finished**\n*Exceeded maximum embed length*\n**Response:**\n"+interaction[0])
     
 
-    
-@bot.command
-@lightbulb.command("shutdown", "shut the bot down", auto_defer=True, ephemeral=True)
-@lightbulb.implements(lightbulb.SlashCommand)
-async def shutdown(ctx):
-    
-    await lightbulb.BotApp.close()
-    await ctx.respond("shutting down...")    
 
 @bot.command
 @lightbulb.add_checks(lightbulb.checks.has_role_permissions(32))
@@ -734,7 +772,7 @@ async def update(ctx):
 @lightbulb.implements(lightbulb.SlashCommand)
 async def uptime(ctx):
     #get now
-    now = datetime.datetime.now()
+    now = datetime.now()
     #calculate uptime
     uptime = now - startTime
     #make embed and send
@@ -744,7 +782,7 @@ async def uptime(ctx):
                          color=randC)
     embed.set_footer("requested by " + str(ctx.author) + " | color: " +
                      randC)
-    downIn = now - datetime.timedelta(hours=6)
+    downIn = now - (startTime + timedelta(hours=6))
     embed.add_field("Down in", f"The bot will go down in {downIn}")
     await ctx.respond(embed)
 
@@ -1009,7 +1047,7 @@ async def deleteUser(ctx):
     message = await bot.rest.create_message(channel=ctx.channel_id, content=embed, components=view.build()#, #flags=hikari.MessageFlag.EPHEMERAL
                                            )
     id = message.id
-    view.start(message)  
+    await view.start(message)  
     cache.add_job(str(target), str(id)+str(guild))
     
 @bot.command
