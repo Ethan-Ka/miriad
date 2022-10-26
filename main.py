@@ -88,7 +88,7 @@ myViewGuild = ""
 
 class MakeConvo(miru.Modal):
   name = miru.TextInput(label="Reply", placeholder="Message to reply with", required=True)
-  def __init__(self, id):
+  def __init__(self, label, id):
         self.id = id
   async def callback(self, ctx: miru.ModalContext) -> None:
         guild = ctx.guild_id
