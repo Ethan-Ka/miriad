@@ -145,6 +145,7 @@ class MakeConvo(miru.Modal):
           # Add the button to the action row. This **must** be called after you have finished building every
             view = AICommand(timeout=120)
             message = await bot.rest.create_message(channel=ctx.channel_id, content=embed, components=view.build())
+            await msgs.edit(f"Complete. See message {message.make_link()}")
             await view.start(message)  # Start listening for interactions
             await view.wait()
         if len(interaction[0]) > 255:
