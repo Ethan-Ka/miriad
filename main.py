@@ -561,7 +561,7 @@ async def text(ctx):
     #print(model)
     msgs= await ctx.respond("Sending AI your prompt...")
     interaction = openAI.text(prompt, model)
-    await msgs.delete()
+    await msge.edit("Done.")
     reason = interaction[2]
     if len(interaction[0]) < 1024:
       
