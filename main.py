@@ -88,8 +88,7 @@ myViewGuild = ""
 
 class MakeConvo(miru.Modal):
   name = miru.TextInput(label="Reply", placeholder="Message to reply with", required=True)
-  def __init__(self, label, id):
-        self.id = id
+ 
   async def callback(self, ctx: miru.ModalContext) -> None:
         guild = ctx.guild_id
         author = ctx.user.id
@@ -146,7 +145,7 @@ class MakeConvo(miru.Modal):
             view = AICommand(timeout=120)
             message = await bot.rest.create_message(channel=ctx.channel_id, content=embed, components=view.build())
             #cache.delete_job(author+guild)
-            cache.add_job((prompt).strip().rstrip()+interaction[0].rstrip()+"=-="+model, id=message.id)
+            cache.add_job((prompt).strip().rstrip()+interaction[0].rstrip()+"=-="+model, id=str(message.id))
             await msgs.edit(f"Complete. See message {message.make_link()}")
             await view.start(message)  # Start listening for interactions
             await view.wait()
@@ -164,7 +163,7 @@ class MakeConvo(miru.Modal):
 class AICommand(miru.View):
     @miru.button(label="Make Conversation",  style=hikari.ButtonStyle.PRIMARY)
     async def make_convo(self, button: miru.Button, ctx: miru.Context) -> None:
-        modal = MakeConvo("Reply", ctx.message.id) # Stop listening for interactions
+        modal = MakeConvo("Reply", custom_id = str(ctx.message.id)) # Stop listening for interactions
         await ctx.respond_with_modal(modal)
         
 class confirmDelete(miru.View):
