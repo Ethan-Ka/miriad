@@ -789,7 +789,7 @@ async def uptime(ctx):
                          color=randC)
     embed.set_footer("requested by " + str(ctx.author) + " | color: " +
                      randC)
-    downIn = now - (startTime + timedelta(hours=6))
+    downIn = (startTime + timedelta(hours=6)) - now
     embed.add_field("Down in", f"The bot will go down in {downIn}")
     await ctx.respond(embed)
 
