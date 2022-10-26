@@ -113,12 +113,15 @@ class MakeConvo(miru.Modal):
         if content=="":
           return
         content = list(self.values.values())[0]
+        punct = ['.', '?', '!']
+        if not any(word in content for word in punct):
+            content = content+"."
         prompt = self.prompt+content
         #respond before sending request because it times out
         msgs = await ctx.respond("Responding...", flags = hikari.MessageFlag.EPHEMERAL)
         interaction = openAI.text(prompt, model)
         reason = interaction[2]
-        await msgs.edit("Responded!")
+        await msgs.edit("Responded!", delete_after = 5)
         #await ctx.respond("Interaction complete")
         print(len(interaction[0]))
         if len(interaction[0]) < 256:
