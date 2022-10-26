@@ -124,7 +124,7 @@ class MakeConvo(miru.Modal):
         if len(interaction[0]) < 256:
           if len(prompt) > 255:
             print(len(prompt))
-            promptDisplay = prompt.split(':')[int(prompt.rfind(':'))]
+            promptDisplay = prompt.split(':')[int(prompt.rfind(':'))-1]
             promptDisplay = "Human: "+promptDisplay
           else:
             promptDisplay = prompt
