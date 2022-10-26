@@ -88,13 +88,14 @@ myViewGuild = ""
 
 class MakeConvo(miru.Modal):
   name = miru.TextInput(label="Reply", placeholder="Message to reply with", required=True)
-
+  def __init__(self, id):
+        self.id = id
   async def callback(self, ctx: miru.ModalContext) -> None:
         guild = ctx.guild_id
         author = ctx.user.id
         myViewUser = ctx.user.id
         myViewGuild = ctx.guild_id
-        job = cache.fetch_job(ctx.message.id)
+        job = cache.fetch_job(self.id)
         splitted = job.split("=-=")
         existing = splitted[0]
         model = splitted[1]
@@ -163,8 +164,9 @@ class MakeConvo(miru.Modal):
 class AICommand(miru.View):
     @miru.button(label="Make Conversation",  style=hikari.ButtonStyle.PRIMARY)
     async def make_convo(self, button: miru.Button, ctx: miru.Context) -> None:
-        modal = MakeConvo("Reply") # Stop listening for interactions
+        modal = MakeConvo("Reply", ctx.message.id) # Stop listening for interactions
         await ctx.respond_with_modal(modal)
+        
 class confirmDelete(miru.View):
     @miru.button(label="Yes",  style=hikari.ButtonStyle.DANGER)
     async def make_convo(self, button: miru.Button, ctx: miru.Context) -> None:
