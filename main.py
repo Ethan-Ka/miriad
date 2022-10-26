@@ -94,7 +94,7 @@ class MakeConvo(miru.Modal):
         author = ctx.user.id
         myViewUser = ctx.user.id
         myViewGuild = ctx.guild_id
-        job = cache.fetch_job(author+guild)
+        job = cache.fetch_job(ctx.message.id)
         splitted = job.split("=-=")
         existing = splitted[0]
         model = splitted[1]
@@ -139,12 +139,13 @@ class MakeConvo(miru.Modal):
             embed.add_field("Prompt: "+promptDisplay, interaction[0])
             embed.set_author(
                       name=ctx.author.username, icon=ctx.author.display_avatar_url)
-            cache.delete_job(author+guild)
-            cache.add_job((prompt).strip().rstrip()+interaction[0].rstrip()+"=-="+model, id=author+guild)
+            
           
           # Add the button to the action row. This **must** be called after you have finished building every
             view = AICommand(timeout=120)
             message = await bot.rest.create_message(channel=ctx.channel_id, content=embed, components=view.build())
+            #cache.delete_job(author+guild)
+            cache.add_job((prompt).strip().rstrip()+interaction[0].rstrip()+"=-="+model, id=message.id)
             await msgs.edit(f"Complete. See message {message.make_link()}")
             await view.start(message)  # Start listening for interactions
             await view.wait()
