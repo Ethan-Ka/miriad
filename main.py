@@ -585,7 +585,7 @@ async def text(ctx):
       
       # Add the button to the action row. This **must** be called after you have finished building every    
         message = await bot.rest.create_message(channel=ctx.channel_id, content=embed, components=view.build())
-        cache.add_job("Human: "+prompt.rstrip()+" AI:"+interaction[0]+"=-="+model, id=author+guild)
+        cache.add_job("Human: "+prompt.rstrip()+" AI:"+interaction[0]+"=-="+model, id=str(message.id))
       # individual component.
         await view.start(message)  # Start listening for interactions
         await view.wait()
