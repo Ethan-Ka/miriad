@@ -137,7 +137,7 @@ class MakeConvo(miru.Modal):
             embed.set_author(
                       name=ctx.author.username, icon=ctx.author.display_avatar_url)
             cache.delete_job(author+guild)
-            cache.add_job((prompt).strip().rstrip()+" AI:"+interaction[0].rstrip()+"=-="+model, id=author+guild)
+            cache.add_job((prompt).strip().rstrip()+interaction[0].rstrip()+"=-="+model, id=author+guild)
           
           # Add the button to the action row. This **must** be called after you have finished building every
             view = AICommand(timeout=120)
