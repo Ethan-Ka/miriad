@@ -94,7 +94,7 @@ class MakeConvo(miru.Modal):
         author = ctx.user.id
         myViewUser = ctx.user.id
         myViewGuild = ctx.guild_id
-        job = cache.fetch_job(self.id)
+        job = cache.fetch_job(self.custom_id)
         splitted = job.split("=-=")
         existing = splitted[0]
         model = splitted[1]
