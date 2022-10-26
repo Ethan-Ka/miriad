@@ -121,7 +121,7 @@ class MakeConvo(miru.Modal):
         msgs = await ctx.respond("Responding...", flags = hikari.MessageFlag.EPHEMERAL)
         interaction = openAI.text(prompt, model)
         reason = interaction[2]
-        await msgs.edit("Responded!", delete_after = 5)
+        await msgs.edit("Responded!")
         #await ctx.respond("Interaction complete")
         print(len(interaction[0]))
         if len(interaction[0]) < 256:
