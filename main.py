@@ -145,7 +145,10 @@ class MakeConvo(miru.Modal):
             await view.start(message)  # Start listening for interactions
             await view.wait()
         if len(interaction[0]) > 255:
-          await ctx.respond("**Finished**\n*Exceeded maximum embed length*\n**Response:**\n"+interaction[0])
+          view = AICommand(timeout=120)
+          await ctx.respond("**Finished**\n*Exceeded maximum embed length*\n**Response:**\n"+interaction[0], components=view.build())
+          await view.start(message)  # Start listening for interactions
+          await view.wait()
           cache.delete_job(author+guild)
             
 #    @miru.button(emoji=chr(9209), style=hikari.ButtonStyle.DANGER, row=2)
