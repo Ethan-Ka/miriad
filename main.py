@@ -114,16 +114,18 @@ class MakeConvo(miru.Modal):
           return
         content = list(self.values.values())[0]
         prompt = self.prompt+content
-      
+        #respond before sending request because it times out
+        msgs = await ctx.respond("Responding...", flags = hikari.MessageFlag.EPHEMERAL)
         interaction = openAI.text(prompt, model)
         reason = interaction[2]
-        await ctx.respond("Interaction complete")
+        msgs.edit("Responded!")
+        #await ctx.respond("Interaction complete")
         print(len(interaction[0]))
         if len(interaction[0]) < 256:
           if len(prompt) > 255:
             print(len(prompt))
-            promptDisplay = prompt.rsplit(':', 1)[0]
-            promptDisplay = "Human"+promptDisplay
+            promptDisplay = prompt.split(':')[prompt.rsfind(':')]
+            promptDisplay = "Human:"+promptDisplay
           else:
             promptDisplay = prompt
           if reason == "stop":
@@ -142,7 +144,7 @@ class MakeConvo(miru.Modal):
             message = await bot.rest.create_message(channel=ctx.channel_id, content=embed, components=view.build())
             await view.start(message)  # Start listening for interactions
             await view.wait()
-        if len(interaction[0]) > 256:
+        if len(interaction[0]) > 255:
           await ctx.respond("**Finished**\n*Exceeded maximum embed length*\n**Response:**\n"+interaction[0])
           cache.delete_job(author+guild)
             
@@ -557,8 +559,9 @@ async def text(ctx):
     author = ctx.author.id
     guild = ctx.guild_id
     #print(model)
-    
+    msgs= await ctx.respond("Sending AI your prompt...")
     interaction = openAI.text(prompt, model)
+    await msgs.delete()
     reason = interaction[2]
     if len(interaction[0]) < 1024:
       
