@@ -146,7 +146,7 @@ class MakeConvo(miru.Modal):
             message = await bot.rest.create_message(channel=ctx.channel_id, content=embed, components=view.build())
             #cache.delete_job(author+guild)
             cache.add_job((prompt).strip().rstrip()+interaction[0].rstrip()+"=-="+model, id=str(message.id))
-            await msgs.edit(f"Complete. See message {message.make_link()}")
+            await msgs.edit(f"Complete. See message {message.make_link(await bot.rest.fetch_guild(guild))}")
             await view.start(message)  # Start listening for interactions
             await view.wait()
         if len(interaction[0]) > 255:
