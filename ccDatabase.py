@@ -83,9 +83,10 @@ class ccDatabase():
         if not guild in creamCoin:
           creamCoin[guild] = {"hi"}
           print('good')
-    def create_user(self, guild:any, user_id:any, disabled:bool, admin:bool, userName,author:any):
-        if not creamCoin[guild][author]["admin"]==True:
-              return "noperms"
+    def create_user(self, guild:any, user_id:any, disabled:bool, admin:bool, userName, author:any):
+        #guild, member_id, False, False, member_name,"624384023132635146"
+        #if not creamCoin[guild][author]["admin"]==True:
+        #      return "noperms"
         if not guild in creamCoin:
             creamCoin[guild] = {}
         if not user_id in creamCoin[guild]:
