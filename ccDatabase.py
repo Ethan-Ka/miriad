@@ -15,7 +15,7 @@ class mongoDb():
         self.url = "https://data.mongodb-api.com/app/data-fqmbw/endpoint/data/v1"
         
         self.passw = os.environ["MONGOPW"].strip()
-        self.url = fr"mongodb+srv://miriad:{self.passw}@cluster0.ydvin7k.mongodb.net/?retryWrites=true&w=majority"
+        self.url = fr"mongodb+srv://mainAccess:{self.passw}@cluster0.nkq8skq.mongodb.net/?retryWrites=true&w=majority"
         self.myclient = pymongo.MongoClient(self.url)
         
         self.database = self.myclient["miriad"]
