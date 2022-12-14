@@ -4,7 +4,7 @@ import threading
 import hikari
 import random
 from datetime import datetime, timedelta
-import ccDatabase
+
 import os
 import json
 import schedule
@@ -57,9 +57,7 @@ lines = str(1090 + 173)  #str([main.py] + [ccDatabase.py])
 global statusSTR
 statusSTR = "/seecoins | Version " + version + " | " + lines + " lines of code"
 
-global cc
-cc = ccDatabase.ccDatabase()
-cc.loadCCDatabase()
+
 
 # SET IF MAKING CHANGES
 global developing
@@ -166,44 +164,7 @@ class AICommand(miru.View):
         modal = MakeConvo("Reply", custom_id = str(ctx.message.id)) # Stop listening for interactions
         await ctx.respond_with_modal(modal)
         
-class confirmDelete(miru.View):
-    @miru.button(label="Yes",  style=hikari.ButtonStyle.DANGER)
-    async def make_convo(self, button: miru.Button, ctx: miru.Context) -> None:
-        user = str(ctx.user.id)
-        message = str(ctx.message.id)
-        guild = str(ctx.guild_id)
 
-        job = cache.fetch_job(message+guild)
-        
-        target = job
-        member_name = (await bot.rest.fetch_user(int(target))).username
-        interaction = cc.deleteUser(guild, str(target), str(user))
-        if interaction == "guildnotfound":
-            embed = hikari.Embed(title="Error",
-                                 description="Guild Not Found.",
-                                 color=embedColors.red)
-            embed.add_field("Error:", "creamCoin.guildnotfound error")
-            await ctx.respond(embed)
-        if interaction == "noperms":
-            embed = hikari.Embed(title="Error",
-                                 description="You are not admin.",
-                                 color=embedColors.red)
-            embed.add_field("Error:", "creamCoin.noperms error")
-            await ctx.respond(embed)
-        if interaction == True:
-            embed = hikari.Embed(title="Success!",
-                                 description="User " + target + " deleted.",
-                                 color=embedColors.green)
-            #logmessage = embed(
-            #hikari.Embed(title="Member Deleted", 
-            #           description="A Member was deleted from the CreamCoin Database", 
-            #           color=embedColors.green)
-            #)
-            #logmessage.add_field("Removed user from Cream Coin Database", f"Member {member_name} removed from the Cream Coin Database") # add field
-            #await log(logmessage) #log
-            #await ctx.respond(embed)
-      
-            await ctx.respond(embed, flags=hikari.MessageFlag.EPHEMERAL)
 
 
 bot = lightbulb.BotApp(
@@ -283,18 +244,6 @@ async def logMessage(content):
   await bot.rest.create_message(998700348086681720, content=content)
 
 
-async def doTax():
-  cc.addTaxes("942477753536634962", 10)
-  embed = hikari.Embed(
-      title="10 CC distributed",
-      description=
-      "It's Sunday! 10cc was distributed to accounts that are enabled")
-  await logMessage(embed)
-
-
-schedule.every().sunday.at("01:00").do(doTax, 'Adding CC')
-
-
 async def log(content):
   log_channel = 998700348086681720
   await bot.rest.create_message(log_channel, content=content)
@@ -341,56 +290,6 @@ def writeToDoneRoles(authorID):
 
 
 #create leaderboard embed
-def sendLeaderboard():
-    consoleLog(color.blue, "Do leaderboard")
-    try:
-        randC = randomColor()
-        guild = "942477753536634962"
-        leaderboard = cc.getLeaderboard(guild)
-        #rank counter
-        place = 1
-        embed = hikari.Embed(title="Leaderboard",
-                                description="Creamcoin Leaderboard",
-                                color=randC)
-        for key in leaderboard:
-            if place > 10:
-                break
-            else:
-                keyStr = str(key)
-                value1 = str(key)
-                coins = str(cc.seeCoins(guild, key))
-                embed.add_field(
-                    str(place) + ": ",
-                    f"<@!" + keyStr + "> - " + coins + " CCs")
-                embed.set_footer(
-                    "This leaderboard auto updates. Run /update | color: " +
-                    randC)
-                consoleLog(color.green, "place: " + str(place))
-                place += 1
-
-        return embed
-    except:
-        consoleLog(color.red, "Leaderboard Error")
-
-
-async def retrieveUsernames():
-    consoleLog(color.blue, "Get Usernames")
-    guild = "942477753536634962"
-    creamCoin = cc.creamCoinReturn()
-    for key in creamCoin[guild]:
-        UserObject = await bot.rest.fetch_user(int(key))
-        try:
-            if not UserObject == cc.getUsername(guild, str(key)):
-                consoleLog(color.green, "updated username")
-        except:
-            pass
-        name = UserObject.username
-        try:
-            creamCoin[guild][key]["username"] = name
-        except:
-            creamCoin[guild][key].add("username", name)
-    consoleLog(color.green, "usernames loaded")
-    cc.pushCCDatabase()
 
 
     #RETURN EMBED WITH RULES
@@ -418,23 +317,13 @@ async def member_join(event):
   guild = event.guild_id # get guild id
   member_name = member.username # get member name from object
   member_id = member.id # get member id from object
-  interaction = cc.create_user(guild, member_id, False, False, member_name,"624384023132635146") # add to database
-  # create log embed
-  if interaction:
-    
-    logmessage = hikari.Embed(
-      hikari.Embed(title="Member Joined", 
-                   description="A Member Joined The Server", 
-                   color=embedColors.green)
-      )
-    logmessage.add_field("Added to Cream Coin Database", f"Member {member_name} added to the Cream Coin Database") # add field
-    await log(logmessage) #log
+  
 
 
 @bot.listen(hikari.StartedEvent)
 async def bot_started(event):
     #set now for start message in #1015726410175889489
-    await retrieveUsernames()
+    
     randC = randomColor()
     now = datetime.now()
     # Send bot has started
@@ -456,15 +345,7 @@ async def bot_started(event):
 
     getSetting()
 
-    # CREATE LEADERBOARD
-    leaderboardChannel = 998697615506030602
-    creamCoin = cc.creamCoinReturn()
-    #UPDATE LEADERBOARD
-    leaderboardID = creamCoin["storage"]["leaderboard"]
-    await bot.rest.edit_message(channel=leaderboardChannel,
-                                message=leaderboardID,
-                                content=sendLeaderboard())
-    consoleLog(color.green, "updated leaderboard")
+
     if developing == True:
         hikariStatus = hikari.Status.DO_NOT_DISTURB
         consoleLog(color.green, "developing == True")
@@ -481,57 +362,6 @@ async def bot_started(event):
     consoleLog(color.green, "set status")
 
 # Message Create Event
-@bot.listen(hikari.GuildMessageCreateEvent)
-async def messageCreated(event):
-    # If in the Level Up Channel
-    if event.channel_id == 942477754287411245:
-        guild = "942477753536634962"
-        inputString = event.content
-        levelSplit = inputString.split("j", 1)
-        #Split on "just leveled up"
-        levelTwo = levelSplit[1]
-        levelOne = levelSplit[0]
-
-        user = int(re.search(r'\d+', levelOne).group())
-        #get user ID from the split
-        level = int(re.search(r'\d+', levelTwo).group())
-        #get level up level from the second split
-        randC = randomColor()
-        logmessage = hikari.Embed(title="Level Up!",
-                                  color=embedColors.green,
-                                  description=f"<@{user}> leveled up!")
-        # create an embed message to log
-        if level > 10: #specific level up coin amounts to add
-            amount_to_add = 50
-            balance = cc.seeCoins(guild, str(user)) #get balance
-            amount = int(amount_to_add) + int(balance)
-            interaction = cc.setCoins(guild, str(user), amount, "624384023132635146")
-            if interaction:
-              logmessage.add_field("Level Up!: ",
-                                 "+" + str(amount_to_add) + " cream coins")
-            #  cc.pushCCDatabase()
-              
-            else:
-              logmessage.add_field("Failed", f"Returned {str(interaction)}")
-            await logMessage(logmessage)
-            #addCoins
-        elif level < 10:
-            amount_to_add = 20
-            balance = cc.seeCoins(guild, str(user)) #get balance
-            amount = int(amount_to_add) + int(balance) #add coins to balance
-            cc.setCoins(guild, str(user), amount, "624384023132635146") #set the coins to amount + balance
-            if interaction:
-              logmessage.add_field("Level Up!: ",
-                                 "+" + str(amount_to_add) + " cream coins")
-            #  cc.pushCCDatabase()
-              
-            else:
-              logmessage.add_field("Failed", f"Returned {str(interaction)}") 
-            await logMessage(logmessage)
-        else:
-            print("uh oh")
-
-            #uh oh
 
 
 # -- Load Commands -- #
@@ -632,8 +462,12 @@ async def poll(ctx):
   emoji_2 = ":two:"
   option_1 = str(ctx.options.option_1)
   option_2 = str(ctx.options.option_2)
+  roles = await ctx.author.fetch_roles()
+  permissions = hikari.Permissions.NONE
+  for role in roles:
+      permissions |= role.permissions
   #check if not admin
-  if not cc.isAdmin(guild, ctx.author.id):
+  if not (permissions & hikari.Permissions.ADMINISTRATOR) == hikari.Permissions.ADMINISTRATOR:
       embed = hikari.Embed(
           title="No perms",
           description=
@@ -751,33 +585,6 @@ async def ping(ctx):
 
     
     
-@bot.command
-@lightbulb.command("update", "update leaderboard", ephemeral=True,  auto_defer=True)
-@lightbulb.implements(lightbulb.SlashCommand)
-async def update(ctx):
-    leaderboardChannel = 998697615506030602
-    creamCoin = cc.creamCoinReturn()
-    #UPDATE LEADERBOARD
-    if developing == True:
-        hikariStatus = hikari.Status.DO_NOT_DISTURB
-    else:
-        hikariStatus = hikari.Status.ONLINE
-    #set discord presence
-    await bot.update_presence(status=hikariStatus,
-                              activity=hikari.Activity(
-                                  name=statusSTR,
-                                  type=hikari.ActivityType.PLAYING,
-                              ))
-    leaderboardID = creamCoin["storage"]["leaderboard"]
-    randC = randomColor()
-    await bot.rest.edit_message(channel=leaderboardChannel,
-                                message=leaderboardID,
-                                content=sendLeaderboard())
-    embed = hikari.Embed(title="Success!",
-                         description="check the leaderboard channel",
-                         color=embedColors.green)
-    await ctx.respond(embed)
-
 
 #uptime command
 @bot.command
@@ -982,360 +789,6 @@ async def makeIntro(ctx):
 
 ## ADMIN COMMANDS
 
-
-@bot.command
-@lightbulb.option("user",
-                  "user to create",
-                  type=hikari.OptionType.USER,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True)
-@lightbulb.option("disabled",
-                  "TRUE OR FALSE",
-                  type=hikari.OptionType.BOOLEAN,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True)
-@lightbulb.option("admin",
-                  "TRUE OR FALSE",
-                  type=hikari.OptionType.BOOLEAN,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True)
-@lightbulb.command("create", "create user", ephemeral=True, auto_defer=True)
-@lightbulb.implements(lightbulb.SlashCommand)
-async def createUser(ctx):
-  user = str(ctx.author.id)
-  guild = str(ctx.guild_id)
-  target = str(ctx.options.user.id)
-  disabled = ctx.options.disabled
-  name = (await bot.rest.fetch_user(int(target))).username
-  admin = ctx.options.admin
-  interaction = cc.create_user(guild, target, disabled, admin, name, user)
-  randC = randomColor()
-  if interaction == "guildnotfound":
-      embed = hikari.Embed(title="Error",
-                           description="Guild Not Found.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.guildnotfound error")
-      await ctx.respond(embed)
-  if interaction == "noperms":
-      embed = hikari.Embed(title="Error",
-                           description="You are not admin.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.noperms error")
-      await ctx.respond(embed)
-  if interaction:
-      embed = hikari.Embed(title="Success!",
-                           description="User " + target + " created.")
-      logmessage = hikari.Embed(title="Member Created", 
-                   description="A Member Created In The CC Database", 
-                   color=embedColors.green)
-      logmessage.add_field("Added to Cream Coin Database", f"Member {name} added to the Cream Coin Database") # add field
-      await log(logmessage) #log 
-      await ctx.respond(embed)
-      
-      
-  else:
-      embed = hikari.Embed(title="User create error",
-                           description="Already there bruh",
-                           color=embedColors.red)
-      await ctx.respond(embed)
-
-
-@bot.command
-@lightbulb.option("user",
-                  "user to delete",
-                  type=hikari.OptionType.USER,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True)
-@lightbulb.command("delete", "delete user")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def deleteUser(ctx):
-    
-    user = str(ctx.author.id)
-    guild = str(ctx.guild_id)
-    view = confirmDelete(timeout=60)
-    target = str(ctx.options.user.id)
-
-
-    embed = hikari.Embed(title="Confirm Deletion", description=f"Are you sure you want to delete user <@{target}>?", color=embedColors.red)
-    message = await bot.rest.create_message(channel=ctx.channel_id, content=embed, components=view.build()#, #flags=hikari.MessageFlag.EPHEMERAL
-                                           )
-    id = message.id
-    await view.start(message)  
-    cache.add_job(str(target), str(id)+str(guild))
-    
-@bot.command
-@lightbulb.option("amount",
-                  "amount to set coins to",
-                  type=hikari.OptionType.INTEGER,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True)
-@lightbulb.option("user",
-                  "the user ",
-                  type=hikari.OptionType.USER,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True)
-@lightbulb.option("log",
-                  "if you want to log or not",
-                  type=hikari.OptionType.BOOLEAN,
-                  required=True)
-@lightbulb.command("setcoins", "set coins for a user", ephemeral=True, auto_defer=True)
-@lightbulb.implements(lightbulb.SlashCommand)
-async def setcoins(ctx):
-  user = str(ctx.author.id)
-  guild = str(ctx.guild_id)
-  target = str(ctx.options.user.id)
-  targetmention = ctx.options.user
-  amount = ctx.options.amount
-  interaction = cc.setCoins(guild, target, amount, user)
-  if interaction == "noperms":
-      embed = hikari.Embed(title="Error",
-                           description="You are not admin.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.noperms error")
-      await ctx.respond(embed)
-  if interaction == "targetnotfound":
-      embed = hikari.Embed(title="Error",
-                           description="Target Not Found.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.targetnotfound error")
-      await ctx.respond(embed)
-  if interaction == "disabled":
-      embed = hikari.Embed(title="Error",
-                           description="Target Disabled.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.disabled error")
-      await ctx.respond(embed)
-  if interaction == True:
-
-      embed = hikari.Embed(title="Success!",
-                           description="set coins successfully ")
-      if ctx.options.log:
-          logmessage = hikari.Embed(title="Transaction Made",
-                                    description="Admin action on " +
-                                    ctx.options.user.mention,
-                                    color=embedColors.green)
-          logmessage.add_field("Set:", str(amount) + " CCs")
-          await logMessage(logmessage)
-
-      await ctx.respond(embed)
-
-
-@bot.command
-@lightbulb.option("disabled",
-                  "TRUE OR FALSE",
-                  type=hikari.OptionType.BOOLEAN,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True)
-@lightbulb.option("user",
-                  "the user",
-                  type=hikari.OptionType.USER,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True)
-@lightbulb.command("setdisabled", "disable or enable a user", ephemeral=True, auto_defer=True)
-@lightbulb.implements(lightbulb.SlashCommand)
-async def setdisabled(ctx):
-  user = str(ctx.author.id)
-  guild = str(ctx.guild_id)
-  target = str(ctx.options.user.id)
-  #targetmention = ctx.options.user
-  disabled = ctx.options.disabled
-  interaction = cc.setDisabled(guild, target, disabled, user)
-  if interaction == "noperms":
-      embed = hikari.Embed(title="Error",
-                           description="You are not admin.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.noperms error")
-      await ctx.respond(embed)
-  if interaction == "targetnotfound":
-      embed = hikari.Embed(title="Error",
-                           description="Target Not Found.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.targetnotfound error")
-      await ctx.respond(embed)
-  if interaction == True:
-      embed = hikari.Embed(title="Success!",
-                           description="User [disabled] now set to " +
-                           str(disabled),
-                           color=embedColors.green)
-      await ctx.respond(embed)
-      
-      
-@bot.command
-@lightbulb.option("admin",
-                  "TRUE OR FALSE",
-                  type=hikari.OptionType.BOOLEAN,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True)
-@lightbulb.option("user",
-                  "the user",
-                  type=hikari.OptionType.USER,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True)
-@lightbulb.command("setadmin", "add or remove admin perms", ephemeral=True, auto_defer=True)
-@lightbulb.implements(lightbulb.SlashCommand)
-async def setdisabled(ctx):
-  user = str(ctx.author.id)
-  guild = str(ctx.guild_id)
-  target = str(ctx.options.user.id)
-  #targetmention = ctx.options.user
-  admin = ctx.options.admin
-  interaction = cc.setAdmin(guild, target, admin, user)
-  if interaction == "noperms":
-      embed = hikari.Embed(title="Error",
-                           description="You are not admin.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.noperms error")
-      await ctx.respond(embed)
-  if interaction == "targetnotfound":
-      embed = hikari.Embed(title="Error",
-                           description="Target Not Found.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.targetnotfound error")
-      await ctx.respond(embed)
-  if interaction == True:
-      embed = hikari.Embed(title="Success!",
-                           description="User [admin] now set to " +
-                           str(admin),
-                           color=embedColors.green)
-      await ctx.respond(embed)
-
-
-@bot.command
-@lightbulb.option("amount",
-                  "amount of coins to add",
-                  type=hikari.OptionType.INTEGER,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True)
-@lightbulb.option("user",
-                  "the user ",
-                  type=hikari.OptionType.USER,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True)
-@lightbulb.command("addcoins", "add coins to a user", ephemeral=True, auto_defer=True)
-@lightbulb.implements(lightbulb.SlashCommand)
-async def addcoins(ctx):
-  amount = str(ctx.options.amount)
-  target = str(ctx.options.user.id)
-  guild = str(ctx.guild_id)
-  author = str(ctx.author.id)
-  balance = cc.seeCoins(guild, target)
-  if balance == "targetnotfound":
-      embed = hikari.Embed(title="Error",
-                           description="Target Not Found.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.targetnotfound error")
-      await ctx.respond(embed)
-  else:
-      amounttoset = int(balance) + int(amount)
-      interaction = cc.setCoins(guild, target, amounttoset, author)
-      embed = hikari.Embed(title="Success!",
-                           description=amount +
-                           " funds transferred successfully",
-                           color=embedColors.green)
-      embed.add_field("current funds: ", amounttoset)
-      await ctx.respond(embed)
-
-
-## USER COMMANDS
-
-
-@bot.command
-@lightbulb.add_checks(lightbulb.checks.human_only)
-@lightbulb.option("amount",
-                  "amount to set coins to",
-                  type=hikari.OptionType.INTEGER,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True)
-@lightbulb.option("user",
-                  "the user ",
-                  type=hikari.OptionType.USER,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=True)
-@lightbulb.command("transfer", "transfer coins to a user", ephemeral=True, auto_defer=True)
-@lightbulb.implements(lightbulb.SlashCommand)
-async def transfer(ctx):
-  randC = randomColor()
-  amount = ctx.options.amount
-  target = str(ctx.options.user.id)
-  guild = str(ctx.guild_id)
-  author = str(ctx.author.id)
-  if amount < 0:  #user is trying to transfer 0 or less coins
-      embed = hikari.Embed(title="Transfer Error",
-                           description="",
-                           color=embedColors.red)
-      embed.add_field("Transfer Error:",
-                      "You can't transfer less than 0 coins!")
-      embed.set_footer("Run by " + str(ctx.author))
-      await ctx.respond(embed)
-  interaction = cc.transfer(author, amount, guild, target)
-  if interaction == "usernotfound":
-      embed = hikari.Embed(title="Error",
-                           description="Your Account Not Found.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.usernotfound error")
-      await ctx.respond(embed)
-  if interaction == "insfunds":
-      embed = hikari.Embed(title="Error",
-                           description="Insufficient Funds.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.insfunds error")
-      await ctx.respond(embed)
-  if interaction == "guildnotfound":
-      embed = hikari.Embed(title="Error",
-                           description="Guild Not Found.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.guildnotfound error")
-      await ctx.respond(embed)
-  if interaction == True:
-      embed = hikari.Embed(title="Success!",
-                           description="funds transferred successfully",
-                           color=embedColors.green)
-      logmessage = hikari.Embed(title="Transaction Made",
-                                color=embedColors.green,
-                                description="Transaction between " +
-                                ctx.author.mention + " -> " +
-                                ctx.options.user.mention)
-      logmessage.add_field("Transferred:", str(amount) + " CCs")
-      await logMessage(logmessage)
-      await ctx.respond(embed)
-
-
-@bot.command
-@lightbulb.add_checks(lightbulb.checks.human_only)
-@lightbulb.option("user",
-                  "the user to see coin balance",
-                  type=hikari.OptionType.USER,
-                  modifier=lightbulb.OptionModifier.CONSUME_REST,
-                  required=False)
-@lightbulb.command("seecoins", "see a user's coins", ephemeral=True, auto_defer=True)
-@lightbulb.implements(lightbulb.SlashCommand)
-async def seecoins(ctx):
-  guild = str(ctx.guild_id)
-  author = str(ctx.author.id)
-
-  try:
-      target = str(ctx.options.user.id)
-      targetmention = ctx.target.mention
-  except:
-      target = author
-      targetmention = ctx.author.mention
-  interaction = cc.seeCoins(guild, target)
-
-  if interaction == "targetnotfound":
-      embed = hikari.Embed(title="Error",
-                           description="Target Not Found.",
-                           color=embedColors.red)
-      embed.add_field("Error:", "creamCoin.targetnotfound error")
-      await ctx.respond(embed)
-  else:
-      embed = hikari.Embed(title="Balance",
-                           description="Balance of " + targetmention,
-                           color=randomColor())
-      embed.add_field("Balance: ", str(interaction)+" CCs")
-      await ctx.respond(embed)
-
-
-##################### END CREAMCOIN COMMANDS #####################
 
 # -- Run Bot -- #
 
